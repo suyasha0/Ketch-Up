@@ -10,7 +10,7 @@ var paused = false;
 function preload() {
 	//load tomato running gif 
 	for (var i = 1; i < 25; i++){
-		var fileName = "/images/tomato_running/tomato"+i+".png";
+		var fileName = "images/tomato_running/tomato"+i+".png";
 		tomatoRunning.push(loadImage(fileName));
 	}
 
@@ -51,6 +51,10 @@ function startScreen(){
 function game(){
 	//draw tomato running to the right
 	imageMode(CENTER);
+	currentFrame += 1;
+	if (currentFrame >= tomatoRunning.length) {
+	    currentFrame = 0;
+	}
 	image(tomatoRunning[currentFrame], 250, tomatoHeight);
 }
 
