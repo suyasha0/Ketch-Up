@@ -8,7 +8,7 @@ var glove;
 
 //game mode
 var gameMode = 0;
-var paused = true;
+var paused = false;
 
 function preload() {
 	//load tomato running gif 
@@ -140,6 +140,10 @@ function mouseClicked(){
 		if(mouseX>=418 && mouseX<=574 && mouseY>=338 && mouseY<=401){
 			gameMode = 1;
 		}
+	}
+
+	else if(gameMode===2){
+		
 	}
 
 }
