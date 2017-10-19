@@ -10,8 +10,10 @@ var paused = false;
 function preload() {
 	//load tomato running gif 
 	for (var i = 1; i < 25; i++){
-		var fileName = "images/tomato_running/tomato"+i+".png";
-		tomatoRunning.push(loadImage(fileName));
+		for (var j = 0; j < 2; j++){
+			var fileName = "images/tomato_running/tomato"+i+".png";
+			tomatoRunning.push(loadImage(fileName));
+		}
 	}
 
 }
@@ -26,7 +28,7 @@ function setup(){
 }
 
 function draw(){
-	background(255);
+	background(250);
 
 	if(paused){					//pause screen
 		pauseScreen();
@@ -55,7 +57,7 @@ function game(){
 	if (currentFrame >= tomatoRunning.length) {
 	    currentFrame = 0;
 	}
-	image(tomatoRunning[currentFrame], 250, tomatoHeight);
+	image(tomatoRunning[currentFrame], 50, tomatoHeight, 160, 120);
 }
 
 function gameOver(){
