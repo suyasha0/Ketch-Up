@@ -25,7 +25,7 @@ function preload() {
 	pausescreen = loadImage("images/pausescreen.png");
 
 	//load cursor graphic
-	glove = loadImage("images/glove.png");
+	glove = loadImage("images/fry.png");
 
 }
 
@@ -101,6 +101,7 @@ function gameOver(){
 }
 
 function pauseScreen(){
+	imageMode(CORNER);
 	image(pausescreen, 0, 0);
 
 	//highlight buttons if mouseover
