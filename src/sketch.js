@@ -4,6 +4,7 @@ var tomatoRunning = [];
 var tomatoHeight = 250;
 
 var startscreen, endscreen, pausescreen;
+var glove;
 
 //game mode
 var gameMode = 0;
@@ -23,6 +24,9 @@ function preload() {
 	endscreen = loadImage("images/gameoverscreen.png");
 	pausescreen = loadImage("images/pausescreen.png");
 
+	//load cursor graphic
+	glove = loadImage("images/glove.png");
+
 }
 
 function setup(){
@@ -32,6 +36,7 @@ function setup(){
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
+	noCursor();
 }
 
 function draw(){
@@ -51,6 +56,11 @@ function draw(){
 			gameOver();
 		}
 	}
+
+	//show cursor at every screen except game screen
+	if(paused || gameMode===0 || gameMode===2){
+		image(glove, mouseX, mouseY);
+	}
 }
 
 function startScreen(){
@@ -65,6 +75,14 @@ function startScreen(){
 	    currentFrame = 0;
 	}
 	image(tomatoRunning[currentFrame], 175, tomatoHeight+20, 160, 120);
+
+	//highlight start button if mouseover
+	if(mouseX>=418 && mouseX<=574 && mouseY>=338 && mouseY<=401){
+		noStroke();
+		fill(255, 80);
+		rect(417, 310, 160, 68, 20);
+	}
+
 
 }
 
@@ -90,4 +108,13 @@ function windowResized(){
 	var x = (windowWidth - width) / 2;
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
+}
+
+function mouseClicked(){
+
+	//if click start button, start game
+	if(mouseX>=420 && mouseX<=572 && mouseY>=-330 && mouseY<=395){
+		gameMode = 1;
+	}
+
 }
