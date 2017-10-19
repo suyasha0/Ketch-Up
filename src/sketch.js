@@ -8,7 +8,7 @@ var glove;
 
 //game mode
 var gameMode = 0;
-var paused = false;
+var paused = true;
 
 function preload() {
 	//load tomato running gif 
@@ -102,6 +102,17 @@ function gameOver(){
 
 function pauseScreen(){
 	image(pausescreen, 0, 0);
+
+	//highlight buttons if mouseover
+	if(mouseX>=416 && mouseX<=532 && mouseY>=258 && mouseY<=285){
+		noStroke();
+		fill(250, 80);
+		rect(416, 258, 160, 40, 20);
+	}
+	else if(mouseX>=437 && mouseX<=504.5 && mouseY>=336 && mouseY<=365){
+		fill(250, 80);
+		rect(437, 336, 160, 40, 20);
+	}
 }
 
 function windowResized(){
@@ -112,9 +123,23 @@ function windowResized(){
 
 function mouseClicked(){
 
+	if(paused){
+		if(mouseX>=416 && mouseX<=532 && mouseY>=258 && mouseY<=285){
+			gameMode = 1;
+			paused = false;
+		}
+		else if(mouseX>=437 && mouseX<=504.5 && mouseY>=336 && mouseY<=365){
+			gameMode = 0;
+			paused = false;
+			console.log(gameMode);
+		}
+	}
+
 	//if click start button, start game
-	if(mouseX>=420 && mouseX<=572 && mouseY>=-330 && mouseY<=395){
-		gameMode = 1;
+	else if(gameMode===0){
+		if(mouseX>=418 && mouseX<=574 && mouseY>=338 && mouseY<=401){
+			gameMode = 1;
+		}
 	}
 
 }
