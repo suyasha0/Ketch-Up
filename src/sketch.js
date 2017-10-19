@@ -98,6 +98,17 @@ function game(){
 
 function gameOver(){
 	image(endscreen, 0, 0);
+
+	//highlight buttons if mouseover
+	if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
+		noStroke();
+		fill(250, 80);
+		rect(360, 391, 160, 30, 20);
+	}
+	else if(mouseX>=538.4 && mouseX<=590.5 && mouseY>=391 && mouseY<=408){
+		fill(250, 80);
+		rect(538, 391, 130, 30, 20);
+	}
 }
 
 function pauseScreen(){
@@ -125,10 +136,14 @@ function windowResized(){
 function mouseClicked(){
 
 	if(paused){
+
+		//if click resume, resume game
 		if(mouseX>=416 && mouseX<=536 && mouseY>=258 && mouseY<=285){
 			gameMode = 1;
 			paused = false;
 		}
+
+		//if click quit button, go to home page
 		else if(mouseX>=437 && mouseX<=509.5 && mouseY>=336 && mouseY<=358){
 			gameMode = 0;
 			paused = false;
@@ -136,6 +151,7 @@ function mouseClicked(){
 	}
 
 	//if click start button, start game
+	//***TODO: reset all variables
 	else if(gameMode===0){
 		if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
 			gameMode = 1;
@@ -144,13 +160,23 @@ function mouseClicked(){
 
 	else if(gameMode===2){
 
+		//if click play again button, start new game
+		//***TODO: reset all variables
+		if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
+			gameMode = 1;
+		}
+
+		//if click home button, go to start screen
+		else if(mouseX>=538.4 && mouseX<=590.5 && mouseY>=391 && mouseY<=408){
+			gameMode = 0;
+		}
 	}
 
 }
 
 function keyPressed(){
 
-	//when spacebar pressed, pause game
+	//if spacebar pressed, pause game
 	if(keyCode == 32 && gameMode==1){
 		paused = true;
 	}
