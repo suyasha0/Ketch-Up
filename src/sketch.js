@@ -1,10 +1,13 @@
 var canvas;
+
 var currentFrame = 0;
 var tomatoRunning = [];
 var tomatoHeight = 250;
 
+var potato = [];
+
 var startscreen, endscreen, pausescreen;
-var glove;
+var cursorImg;
 
 //game mode
 var gameMode = 0;
@@ -19,13 +22,21 @@ function preload() {
 		}
 	}
 
+	//load bouncing potato
+	for (var i = 1; i < 5; i++){
+		for (var j = 0; j < 5; j++){
+			var fileName = "images/potato/potato"+i+".png";
+			potato.push(loadImage(fileName));
+		}
+	}
+
 	//load screen images
 	startscreen = loadImage("images/startscreen.png");
 	endscreen = loadImage("images/gameoverscreen.png");
 	pausescreen = loadImage("images/pausescreen.png");
 
 	//load cursor graphic
-	glove = loadImage("images/fry.png");
+	cursorImg = loadImage("images/fry.png");
 
 }
 
@@ -41,6 +52,8 @@ function setup(){
 
 function draw(){
 	background(250);
+	currentFrame += 1;
+	console.log(currentFrame);
 
 	if(paused){					//pause screen
 		pauseScreen();
@@ -59,7 +72,7 @@ function draw(){
 
 	//show cursor at every screen except game screen
 	if(paused || gameMode===0 || gameMode===2){
-		image(glove, mouseX, mouseY);
+		image(cursorImg, mouseX, mouseY);
 	}
 }
 
@@ -70,11 +83,7 @@ function startScreen(){
 
 	//draw tomato running to the right
 	imageMode(CENTER);
-	currentFrame += 1;
-	if (currentFrame >= tomatoRunning.length) {
-	    currentFrame = 0;
-	}
-	image(tomatoRunning[currentFrame], 175, tomatoHeight+20, 160, 120);
+	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
 
 	//highlight start button if mouseover
 	if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
@@ -89,11 +98,8 @@ function startScreen(){
 function game(){
 	//draw tomato running to the right
 	imageMode(CENTER);
-	currentFrame += 1;
-	if (currentFrame >= tomatoRunning.length) {
-	    currentFrame = 0;
-	}
-	image(tomatoRunning[currentFrame], 50, tomatoHeight, 160, 120);
+	image(tomatoRunning[currentFrame%tomatoRunning.length], 50, tomatoHeight, 160, 120);
+	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 }
 
 function gameOver(){
