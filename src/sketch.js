@@ -3,7 +3,7 @@ var currentFrame = 0;
 var tomatoRunning = [];
 var tomatoHeight = 250;
 
-var startscreen;
+var startscreen, endscreen;
 
 //game mode
 var gameMode = 0;
@@ -20,6 +20,7 @@ function preload() {
 
 	//load screen images
 	startscreen = loadImage("images/startscreen.png");
+	endscreen = loadImage("images/gameoverscreen.png");
 
 }
 
@@ -77,7 +78,7 @@ function game(){
 }
 
 function gameOver(){
-
+	image(endscreen, 0, 0);
 }
 
 function windowResized(){
