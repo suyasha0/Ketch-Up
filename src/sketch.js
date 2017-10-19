@@ -131,7 +131,6 @@ function mouseClicked(){
 		else if(mouseX>=437 && mouseX<=504.5 && mouseY>=336 && mouseY<=365){
 			gameMode = 0;
 			paused = false;
-			console.log(gameMode);
 		}
 	}
 
@@ -143,7 +142,16 @@ function mouseClicked(){
 	}
 
 	else if(gameMode===2){
-		
+
+	}
+
+}
+
+function keyPressed(){
+
+	//when spacebar pressed, pause game
+	if(keyCode == 32 && gameMode==1){
+		paused = true;
 	}
 
 }
