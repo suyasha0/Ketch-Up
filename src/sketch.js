@@ -57,7 +57,11 @@ function game(){
 	if (currentFrame >= tomatoRunning.length) {
 	    currentFrame = 0;
 	}
+<<<<<<< HEAD
 	image(tomatoRunning[currentFrame], 50, tomatoHeight, 160, 120);
+=======
+	image(tomatoRunning[currentFrame], 500, tomatoHeight);
+>>>>>>> 1f8868d23d461a395740e2b0be5d459beca8f574
 }
 
 function gameOver(){
