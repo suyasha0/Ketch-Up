@@ -3,8 +3,10 @@ var currentFrame = 0;
 var tomatoRunning = [];
 var tomatoHeight = 250;
 
+var startscreen;
+
 //game mode
-var gameMode = 1;
+var gameMode = 0;
 var paused = false;
 
 function preload() {
@@ -15,6 +17,9 @@ function preload() {
 			tomatoRunning.push(loadImage(fileName));
 		}
 	}
+
+	//load screen images
+	startscreen = loadImage("images/startscreen.png");
 
 }
 
@@ -47,6 +52,17 @@ function draw(){
 }
 
 function startScreen(){
+
+	imageMode(CORNER);
+	image(startscreen, 0, 0);
+
+	//draw tomato running to the right
+	imageMode(CENTER);
+	currentFrame += 1;
+	if (currentFrame >= tomatoRunning.length) {
+	    currentFrame = 0;
+	}
+	image(tomatoRunning[currentFrame], 175, tomatoHeight+20, 160, 120);
 
 }
 
