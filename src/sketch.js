@@ -77,7 +77,7 @@ function startScreen(){
 	image(tomatoRunning[currentFrame], 175, tomatoHeight+20, 160, 120);
 
 	//highlight start button if mouseover
-	if(mouseX>=418 && mouseX<=574 && mouseY>=338 && mouseY<=401){
+	if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
 		noStroke();
 		fill(255, 80);
 		rect(417, 310, 160, 68, 20);
@@ -105,12 +105,12 @@ function pauseScreen(){
 	image(pausescreen, 0, 0);
 
 	//highlight buttons if mouseover
-	if(mouseX>=416 && mouseX<=532 && mouseY>=258 && mouseY<=285){
+	if(mouseX>=416 && mouseX<=536 && mouseY>=258 && mouseY<=285){
 		noStroke();
 		fill(250, 80);
 		rect(416, 258, 160, 40, 20);
 	}
-	else if(mouseX>=437 && mouseX<=504.5 && mouseY>=336 && mouseY<=365){
+	else if(mouseX>=437 && mouseX<=509.5 && mouseY>=336 && mouseY<=358){
 		fill(250, 80);
 		rect(437, 336, 160, 40, 20);
 	}
@@ -125,11 +125,11 @@ function windowResized(){
 function mouseClicked(){
 
 	if(paused){
-		if(mouseX>=416 && mouseX<=532 && mouseY>=258 && mouseY<=285){
+		if(mouseX>=416 && mouseX<=536 && mouseY>=258 && mouseY<=285){
 			gameMode = 1;
 			paused = false;
 		}
-		else if(mouseX>=437 && mouseX<=504.5 && mouseY>=336 && mouseY<=365){
+		else if(mouseX>=437 && mouseX<=509.5 && mouseY>=336 && mouseY<=358){
 			gameMode = 0;
 			paused = false;
 		}
@@ -137,7 +137,7 @@ function mouseClicked(){
 
 	//if click start button, start game
 	else if(gameMode===0){
-		if(mouseX>=418 && mouseX<=574 && mouseY>=338 && mouseY<=401){
+		if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
 			gameMode = 1;
 		}
 	}
