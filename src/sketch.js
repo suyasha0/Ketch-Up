@@ -2,12 +2,14 @@
 var canvas;
 
 var currentFrame = 0;
+
+//Tomato Variables 
 var tomatoRunning = [];
+var tomatoX = 50;
 var tomatoHeight = 250;
 var tomatoSpeed = 3;
-var tomatoX = 50;
 
-
+//Potato Variables
 var potato = [];
 
 var startscreen, endscreen, pausescreen;
@@ -20,6 +22,7 @@ var paused = false;
 //Mic variable
 var micInput;
 var gravity = 5;
+var jump = false;
 
 function preload() {
 	//load tomato running gif 
@@ -59,6 +62,7 @@ function setup(){
 	micInput = new p5.AudioIn();
 	micInput.start(); //start listening for input from mic
 
+	//no cursor
 	noCursor();
 }
 
@@ -103,34 +107,38 @@ function startScreen(){
 		fill(255, 80);
 		rect(417, 310, 160, 68, 20);
 	}
-
-
 }
 
 function game(){
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	console.log(vol);
-	var threshold = 0.1;
+	//console.log(vol);
+	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
 	if(vol > threshold){
-		//jump = true;
-		//jumpDown = false;
-		//jumpCount++;
-		if(tomatoHeight <= 250){
-			tomatoHeight -= 10;
+		if(tomatoHeight <= 250 && !jump){	//checks if tomato has not jumped yet
+			tomatoHeight -= 50;				//jump up 50 pixels
 		}
 	}
 
+	//Tomato speed is added to tomato to move it horizontally
 	tomatoX += tomatoSpeed;
+	//Tomato height is affected by gravity
 	tomatoHeight += gravity;
-	//console.log(tomatoX);
 
+	//Temporary: Tomato restarts at the left side of canvas
 	if(tomatoX > width - 50){
 		tomatoX = 50;
 	}
+
+	//Tomato does not go below the ground
 	if(tomatoHeight >= 250){
 		tomatoHeight = 250;
+		jump = false;
+	}
+
+	if(tomatoHeight <= 200){ //tomato jumped
+		jump = true;
 	}
 
 	//draw tomato running to the right
