@@ -1,8 +1,12 @@
+//Declare and intialize variables 
 var canvas;
 
 var currentFrame = 0;
 var tomatoRunning = [];
 var tomatoHeight = 250;
+var tomatoSpeed = 3;
+var tomatoX = 50;
+
 
 var potato = [];
 
@@ -12,6 +16,10 @@ var cursorImg;
 //game mode
 var gameMode = 0;
 var paused = false;
+
+//Mic variable
+var micInput;
+var gravity = 5;
 
 function preload() {
 	//load tomato running gif 
@@ -47,13 +55,17 @@ function setup(){
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
+	//audio input
+	micInput = new p5.AudioIn();
+	micInput.start(); //start listening for input from mic
+
 	noCursor();
 }
 
 function draw(){
 	background(250);
 	currentFrame += 1;
-	console.log(currentFrame);
+	//console.log(currentFrame);
 
 	if(paused){					//pause screen
 		pauseScreen();
@@ -96,9 +108,34 @@ function startScreen(){
 }
 
 function game(){
+
+	//get volume from mic (values b/w 0 and 1);
+	var vol = micInput.getLevel();
+	console.log(vol);
+	var threshold = 0.1;
+	if(vol > threshold){
+		//jump = true;
+		//jumpDown = false;
+		//jumpCount++;
+		if(tomatoHeight <= 250){
+			tomatoHeight -= 10;
+		}
+	}
+
+	tomatoX += tomatoSpeed;
+	tomatoHeight += gravity;
+	//console.log(tomatoX);
+
+	if(tomatoX > width - 50){
+		tomatoX = 50;
+	}
+	if(tomatoHeight >= 250){
+		tomatoHeight = 250;
+	}
+
 	//draw tomato running to the right
 	imageMode(CENTER);
-	image(tomatoRunning[currentFrame%tomatoRunning.length], 50, tomatoHeight, 160, 120);
+	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
 	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 }
 
