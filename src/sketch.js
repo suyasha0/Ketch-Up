@@ -23,8 +23,8 @@ var paused = false;
 
 //Mic variable
 var micInput;
-var gravity = 5;
-var jump = false;
+var gravity = 1;
+//var jump = false;
 
 function preload() {
 	//load tomato running gif 
@@ -126,10 +126,7 @@ function game(){
 	console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
 	if(vol > threshold){
-		// if(tomatoHeight <= 250 && !jump){	//checks if tomato has not jumped yet
-		// 	tomatoHeight -= 50;				//jump up 50 pixels
-		// }
-		tomatoHeight -= 10;
+		tomatoHeight -= 5;	
 	}
 	if(tomatoHeight < 0){ //Placeholder for triangle
 		fill(0);
@@ -149,11 +146,12 @@ function game(){
 	//Tomato does not go below the ground
 	if(tomatoHeight >= 250){
 		tomatoHeight = 250;
-		jump = false;
 	}
 
-	if(tomatoHeight <= 200){ //tomato jumped
-		jump = true;
+	//GAME OVER 
+	//TODO: If it touches enemy 
+	if(tomatoHeight > height){	//if it falls pass the bottom of canvas
+		gameMode = 2;
 	}
 
 	//draw tomato running to the right
