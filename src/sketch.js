@@ -158,7 +158,7 @@ function game(){
 	imageMode(CENTER);
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
 	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
-	image(succ[Math.floor(currentFrame/2)%succ.length], 100,100, 160, 120);
+	image(succ[Math.floor(currentFrame/2)%succ.length], 100,60, 90, 110);
 	
 }
 
@@ -246,3 +246,8 @@ function keyPressed(){
 	}
 }
 
+function Enemy(xPos,yPos){
+	this.x = xPos;
+	this.y = yPos;
+	this.xSpeed = -3;
+}
