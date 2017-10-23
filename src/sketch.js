@@ -85,7 +85,7 @@ function setup(){
 	canvas.position(x, y);
 
 	potato = new Enemy(130,250,potatoImgs,300,300);
-	succ = new Spike(100,100,succImgs,90,110);
+	succ = new Spike(0,0,succImgs,90,110); //90 width, 110 height
 	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
 
 
@@ -102,8 +102,8 @@ function draw(){
 	background(250);
 	currentFrame += 1;
 	//console.log(currentFrame);
-	game();
-	/*
+	
+	
 	if(paused){					//pause screen
 		pauseScreen();
 	}
@@ -117,7 +117,7 @@ function draw(){
 		if (gameMode === 2){	//represents game over screen
 			gameOver();
 		}
-	}*/
+	}
 
 	//show cursor at every screen except game screen
 	if(paused || gameMode===0 || gameMode===2){
@@ -181,11 +181,14 @@ function game(){
 	imageMode(CENTER);
 
 	
-	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
+	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120); //160 width, 120 height
 
 	potato.display();
-	succ.display();
 	walkingPotato.display();
+
+	imageMode(CORNER);
+	succ.display();
+	succ.collisionTest();
 /*
 	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
@@ -292,8 +295,19 @@ class Enemy {
 	}
 }
 
-class Spike extends Enemy {
+class Spike extends Enemy { //90 width, 110 height, 0,0 is top left corner
 	constructor (xPos,yPos,obj,xSize,ySize){
 		super(xPos,yPos,obj,xSize,ySize);
+	}
+	collisionTest(){ //tomato 160 width, 120 height, centered
+		//var tomatoX = 50;
+		//var tomatoHeight = 250;
+		if ((tomatoHeight-60)<=(this.y+this.ySize) && (tomatoX+80)>=this.x && (tomatoX-80)<=(this.x+90) && (tomatoHeight+60)>this.y){
+//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant, bottom of tom below top of plant
+			this.collide = true;
+			gameMode = 2;
+
+		}
+		
 	}
 }
