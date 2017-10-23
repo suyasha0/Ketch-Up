@@ -18,6 +18,10 @@ var potato;
 var succImgs = [];
 var succ;
 
+//Walking potato (walkingPotato) variables
+var walkingPotatoImgs = [];
+var walkingPotato;
+
 var startscreen, endscreen, pausescreen;
 var cursorImg;
 
@@ -51,7 +55,7 @@ function preload() {
 	for (var i = 1; i < 42; i++){
 		for (var j = 0; j < 2; j++){
 			var fileName = "images/enemies/potato_walk/potato_walk"+i+".png";
-			potatoWalking.push(loadImage(fileName));
+			walkingPotatoImgs.push(loadImage(fileName));
 		}
 	}
 
@@ -80,8 +84,9 @@ function setup(){
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
-	potato = new Enemy(130,250,potatoImgs,300,300,1);
-	succ = new Enemy(100,100,succImgs,90,110,2);
+	potato = new Enemy(130,250,potatoImgs,300,300);
+	succ = new Enemy(100,100,succImgs,90,110);
+	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
 
 
 	//audio input
@@ -174,12 +179,14 @@ function game(){
 
 	
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
+
 	potato.display();
 	succ.display();
+	walkingPotato.display();
 
 	// image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	// image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
-	// image(succ[currentFrame%succ.length], 100, 60, 90, 110);	
+	// image(succ[currentFrame%succ.length], 100, 60, 90, 110);
 }
 
 function gameOver(){
@@ -272,6 +279,11 @@ function Enemy(xPos,yPos,obj,xSize,ySize){
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
+<<<<<<< HEAD
+=======
+	this.collide = false;
+	//this.frameRate = rate
+>>>>>>> ccf7ba71019abc9b7f5fda3cc20f7dad1d8de2d0
 
 	this.display = function(){
 		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
