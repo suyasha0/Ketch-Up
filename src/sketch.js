@@ -2,6 +2,7 @@
 var canvas;
 
 var currentFrame = 0;
+var tiles = [];
 
 //Tomato Variables 
 var tomatoRunning = [];
@@ -35,7 +36,7 @@ function preload() {
 
 	//load bouncing potato
 	for (var i = 1; i < 5; i++){
-		for (var j = 0; j < 5; j++){
+		for (var j = 0; j < 8; j++){
 			var fileName = "images/potato/potato"+i+".png";
 			potato.push(loadImage(fileName));
 		}
