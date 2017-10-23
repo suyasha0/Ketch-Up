@@ -11,19 +11,12 @@ var tomatoHeight = 250;
 var tomatoSpeed = 3;
 
 //Potato Variables
-<<<<<<< HEAD
 var potatoImgs = [];
 var potato;
-
 
 //Succulent Variables
 var succImgs = [];
 var succ;
-=======
-var potato = [];
-var potatoWalking = [];
-var succ = [];
->>>>>>> d51e3d5920388d7a804e4197b219a6920a31197c
 
 var startscreen, endscreen, pausescreen;
 var cursorImg;
@@ -95,8 +88,6 @@ function setup(){
 	micInput = new p5.AudioIn();
 	micInput.start(); //start listening for input from mic
 
-
-
 	//no cursor
 	noCursor();
 }
@@ -104,9 +95,7 @@ function setup(){
 function draw(){
 	background(250);
 	currentFrame += 1;
-	//console.log(currentFrame);
-	game();
-	/*
+
 	if(paused){					//pause screen
 		pauseScreen();
 	}
@@ -120,7 +109,7 @@ function draw(){
 		if (gameMode === 2){	//represents game over screen
 			gameOver();
 		}
-	}*/
+	}
 
 	//show cursor at every screen except game screen
 	if(paused || gameMode===0 || gameMode===2){
@@ -185,17 +174,12 @@ function game(){
 
 	
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
-<<<<<<< HEAD
 	potato.display();
 	succ.display();
-	/*image(potato[currentFrame%potato.length], 130, 250, 300, 300);
-	image(succ[Math.floor(currentFrame/2)%succ.length], 300,60, 90, 110);*/
-=======
-	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
-	image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
-	image(succ[currentFrame%succ.length], 100, 60, 90, 110);
->>>>>>> d51e3d5920388d7a804e4197b219a6920a31197c
-	
+
+	// image(potato[currentFrame%potato.length], 130, 250, 300, 300);
+	// image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
+	// image(succ[currentFrame%succ.length], 100, 60, 90, 110);	
 }
 
 function gameOver(){
@@ -281,19 +265,15 @@ function keyPressed(){
 	}
 }
 
-function Enemy(xPos,yPos,obj,xSize,ySize,rate){
+function Enemy(xPos,yPos,obj,xSize,ySize){
 	this.x = xPos;
 	this.y = yPos;
 	this.xSpeed = -3;
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
-	this.frameRate = rate
 
 	this.display = function(){
-		image(obj[Math.floor(currentFrame/this.frameRate)%obj.length], this.x, this.y, this.xSize, this.ySize);
-	
-		
-		//image(succ[Math.floor(currentFrame/2)%succ.length], 100,60, 90, 110);*/
+		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
 	};
 }
