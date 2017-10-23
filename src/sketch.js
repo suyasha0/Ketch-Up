@@ -85,7 +85,7 @@ function setup(){
 	canvas.position(x, y);
 
 	potato = new Enemy(130,250,potatoImgs,300,300);
-	succ = new Enemy(100,100,succImgs,90,110);
+	succ = new Spike(100,100,succImgs,90,110);
 	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
 
 
@@ -275,17 +275,25 @@ function keyPressed(){
 	}
 }
 
-function Enemy(xPos,yPos,obj,xSize,ySize){
-	this.x = xPos;
-	this.y = yPos;
-	this.xSpeed = -3;
-	this.ySpeed = 0;
-	this.xSize = xSize;
-	this.ySize = ySize;
-	this.collide = false;
-	//this.frameRate = rate
+class Enemy {
+	constructor(xPos,yPos,obj,xSize,ySize){
+		this.x = xPos;
+		this.y = yPos;
+		this.xSpeed = -3;
+		this.ySpeed = 0;
+		this.xSize = xSize;
+		this.ySize = ySize;
+		this.collide = false;
+		//this.frameRate = rate
+	
+		this.display = function(){
+			image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
+		};
+	}
+}
 
-	this.display = function(){
-		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
-	};
+class Spike extends Enemy {
+	constructor (xPos,yPos,obj,xSize,ySize){
+		super(xPos,yPos,obj,xSize,ySize);
+	}
 }
