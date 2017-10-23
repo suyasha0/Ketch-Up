@@ -237,14 +237,12 @@ function mouseClicked(){
 			gameMode = 0;
 		}
 	}
-
 }
 
 function keyPressed(){
-
 	//if spacebar pressed, pause game
 	if(keyCode == 32 && gameMode==1){
 		paused = true;
 	}
-
 }
+
