@@ -11,6 +11,7 @@ var tomatoHeight = 250;
 var tomatoSpeed = 3;
 
 //Potato Variables
+<<<<<<< HEAD
 var potatoImgs = [];
 var potato;
 
@@ -18,6 +19,11 @@ var potato;
 //Succulent Variables
 var succImgs = [];
 var succ;
+=======
+var potato = [];
+var potatoWalking = [];
+var succ = [];
+>>>>>>> d51e3d5920388d7a804e4197b219a6920a31197c
 
 var startscreen, endscreen, pausescreen;
 var cursorImg;
@@ -48,9 +54,17 @@ function preload() {
 		}
 	}
 
+	//load walking potato
+	for (var i = 1; i < 42; i++){
+		for (var j = 0; j < 2; j++){
+			var fileName = "images/enemies/potato_walk/potato_walk"+i+".png";
+			potatoWalking.push(loadImage(fileName));
+		}
+	}
+
 	//load succ
 	for (var i = 1; i < 11; i++){
-		for (var j = 0; j < 4; j++){
+		for (var j = 0; j < 8; j++){
 			var fileName = "images/enemies/succ/succ"+i+".png";
 			succImgs.push(loadImage(fileName));
 		}
@@ -171,10 +185,16 @@ function game(){
 
 	
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
+<<<<<<< HEAD
 	potato.display();
 	succ.display();
 	/*image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	image(succ[Math.floor(currentFrame/2)%succ.length], 300,60, 90, 110);*/
+=======
+	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
+	image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
+	image(succ[currentFrame%succ.length], 100, 60, 90, 110);
+>>>>>>> d51e3d5920388d7a804e4197b219a6920a31197c
 	
 }
 
