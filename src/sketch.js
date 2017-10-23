@@ -11,7 +11,6 @@ var tomatoHeight = 250;
 var tomatoSpeed = 3;
 
 //Potato Variables
-
 var potatoImgs = [];
 var potato;
 
@@ -20,9 +19,9 @@ var potato;
 var succImgs = [];
 var succ;
 
-var potato = [];
-var potatoWalking = [];
-var succ = [];
+//Walking potato (walkingPotato) variables
+var walkingPotatoImgs = [];
+var walkingPotato;
 
 
 var startscreen, endscreen, pausescreen;
@@ -58,7 +57,7 @@ function preload() {
 	for (var i = 1; i < 42; i++){
 		for (var j = 0; j < 2; j++){
 			var fileName = "images/enemies/potato_walk/potato_walk"+i+".png";
-			potatoWalking.push(loadImage(fileName));
+			walkingPotatoImgs.push(loadImage(fileName));
 		}
 	}
 
@@ -87,8 +86,9 @@ function setup(){
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
-	potato = new Enemy(130,250,potatoImgs,300,300,1);
-	succ = new Enemy(100,100,succImgs,90,110,2);
+	potato = new Enemy(130,250,potatoImgs,300,300);
+	succ = new Enemy(100,100,succImgs,90,110);
+	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
 
 
 	//audio input
@@ -188,14 +188,15 @@ function game(){
 
 	potato.display();
 	succ.display();
+	walkingPotato.display();
+
+//	image(walkingPotatoImgs[currentFrame%walkingPotatoImgs.length], 200, 250, 150, 120);
 	/*image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	image(succ[Math.floor(currentFrame/2)%succ.length], 300,60, 90, 110);*/
 /*
 	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
 	image(succ[currentFrame%succ.length], 100, 60, 90, 110);*/
-
-	
 }
 
 function gameOver(){
@@ -281,18 +282,16 @@ function keyPressed(){
 	}
 }
 
-function Enemy(xPos,yPos,obj,xSize,ySize,rate){
+function Enemy(xPos,yPos,obj,xSize,ySize){
 	this.x = xPos;
 	this.y = yPos;
 	this.xSpeed = -3;
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
-	this.frameRate = rate
+	//this.frameRate = rate
 
 	this.display = function(){
-		image(obj[Math.floor(currentFrame/this.frameRate)%obj.length], this.x, this.y, this.xSize, this.ySize);
-	
-
+		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
 	};
 }
