@@ -279,11 +279,7 @@ function Enemy(xPos,yPos,obj,xSize,ySize){
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
-<<<<<<< HEAD
-=======
 	this.collide = false;
-	//this.frameRate = rate
->>>>>>> ccf7ba71019abc9b7f5fda3cc20f7dad1d8de2d0
 
 	this.display = function(){
 		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
