@@ -11,8 +11,13 @@ var tomatoHeight = 250;
 var tomatoSpeed = 3;
 
 //Potato Variables
-var potato = [];
-var succ = [];
+var potatoImgs = [];
+var potato;
+
+
+//Succulent Variables
+var succImgs = [];
+var succ;
 
 var startscreen, endscreen, pausescreen;
 var cursorImg;
@@ -39,7 +44,7 @@ function preload() {
 	for (var i = 1; i < 5; i++){
 		for (var j = 0; j < 8; j++){
 			var fileName = "images/enemies/potato/potato"+i+".png";
-			potato.push(loadImage(fileName));
+			potatoImgs.push(loadImage(fileName));
 		}
 	}
 
@@ -47,7 +52,7 @@ function preload() {
 	for (var i = 1; i < 11; i++){
 		for (var j = 0; j < 4; j++){
 			var fileName = "images/enemies/succ/succ"+i+".png";
-			succ.push(loadImage(fileName));
+			succImgs.push(loadImage(fileName));
 		}
 	}
 
@@ -68,9 +73,15 @@ function setup(){
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
+	potato = new Enemy(130,250,potatoImgs,300,300,1);
+	succ = new Enemy(100,100,succImgs,90,110,2);
+
+
 	//audio input
 	micInput = new p5.AudioIn();
 	micInput.start(); //start listening for input from mic
+
+
 
 	//no cursor
 	noCursor();
@@ -80,7 +91,8 @@ function draw(){
 	background(250);
 	currentFrame += 1;
 	//console.log(currentFrame);
-
+	game();
+	/*
 	if(paused){					//pause screen
 		pauseScreen();
 	}
@@ -94,7 +106,7 @@ function draw(){
 		if (gameMode === 2){	//represents game over screen
 			gameOver();
 		}
-	}
+	}*/
 
 	//show cursor at every screen except game screen
 	if(paused || gameMode===0 || gameMode===2){
@@ -123,7 +135,7 @@ function game(){
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	console.log(vol);
+	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
 	if(vol > threshold){
 		tomatoHeight -= 5;	
@@ -156,9 +168,13 @@ function game(){
 
 	//draw tomato running to the right
 	imageMode(CENTER);
+
+	
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120);
-	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
-	image(succ[Math.floor(currentFrame/2)%succ.length], 100,60, 90, 110);
+	potato.display();
+	succ.display();
+	/*image(potato[currentFrame%potato.length], 130, 250, 300, 300);
+	image(succ[Math.floor(currentFrame/2)%succ.length], 300,60, 90, 110);*/
 	
 }
 
@@ -200,7 +216,6 @@ function windowResized(){
 }
 
 function mouseClicked(){
-
 	if(paused){
 
 		//if click resume, resume game
@@ -246,8 +261,19 @@ function keyPressed(){
 	}
 }
 
-function Enemy(xPos,yPos){
+function Enemy(xPos,yPos,obj,xSize,ySize,rate){
 	this.x = xPos;
 	this.y = yPos;
 	this.xSpeed = -3;
+	this.ySpeed = 0;
+	this.xSize = xSize;
+	this.ySize = ySize;
+	this.frameRate = rate
+
+	this.display = function(){
+		image(obj[Math.floor(currentFrame/this.frameRate)%obj.length], this.x, this.y, this.xSize, this.ySize);
+	
+		
+		//image(succ[Math.floor(currentFrame/2)%succ.length], 100,60, 90, 110);*/
+	};
 }
