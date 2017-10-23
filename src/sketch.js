@@ -114,12 +114,17 @@ function game(){
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	//console.log(vol);
+	console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
 	if(vol > threshold){
-		if(tomatoHeight <= 250 && !jump){	//checks if tomato has not jumped yet
-			tomatoHeight -= 50;				//jump up 50 pixels
-		}
+		// if(tomatoHeight <= 250 && !jump){	//checks if tomato has not jumped yet
+		// 	tomatoHeight -= 50;				//jump up 50 pixels
+		// }
+		tomatoHeight -= 10;
+	}
+	if(tomatoHeight < 0){ //Placeholder for triangle
+		fill(0);
+		triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
 	}
 
 	//Tomato speed is added to tomato to move it horizontally
