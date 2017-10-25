@@ -2,12 +2,20 @@
 var canvas;
 
 var currentFrame = 0;
-var tiles = [];
+
+//tile variable
+var grassL;
+var grassM;
+var grassR;
+var grassHeight = 300;
+var grassWidth = 7;
+var gapWidth = 3; 
+var platformHeight = 300;
 
 //Tomato Variables 
 var tomatoRunning = [];
 var tomatoX = 50;
-var tomatoHeight = 250;
+var tomatoHeight = 270;
 var tomatoSpeed = 3;
 
 //Potato Variables
@@ -75,6 +83,10 @@ function preload() {
 	//load cursor graphic
 	cursorImg = loadImage("images/fry.png");
 
+	//load tile
+	grassL = loadImage("images/tiles/grassLeft.png");
+	grassM = loadImage("images/tiles/grassMid.png");
+	grassR = loadImage("images/tiles/grassRight.png");
 }
 
 function setup(){
@@ -164,9 +176,14 @@ function game(){
 		tomatoX = 50;
 	}
 
-	//Tomato does not go below the ground
-	if(tomatoHeight >= 250){
-		tomatoHeight = 250;
+	//Tomato does not go below the platform height
+	if(currentHeight !== 0 && tomatoHeight >= currentHeight-30){
+		tomatoHeight = currentHeight-30;
+	}
+
+	//game over if tomato falls below the screen
+	if (tomatoHeight > 500){
+		gameMode = 2;
 	}
 
 	//GAME OVER 
@@ -179,7 +196,7 @@ function game(){
 	imageMode(CENTER);
 
 	
-	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120); //160 width, 120 height
+	image(tomatoRunning[currentFrame%tomatoRunning.length], 0, tomatoHeight, 160, 120); //160 width, 120 height
 
 	potato.display();
 	walkingPotato.display();
@@ -187,10 +204,16 @@ function game(){
 	imageMode(CORNER);
 	succ.display();
 	succ.collisionTest();
-/*
-	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
-	image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
-	image(succ[currentFrame%succ.length], 100, 60, 90, 110);*/
+
+	// image(potato[currentFrame%potato.length], 130, 250, 300, 300);
+	// image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
+	// image(succ[currentFrame%succ.length], 100, 60, 90, 110);
+
+	drawPlatforms();
+}
+
+function drawPlatforms(){
+
 }
 
 function gameOver(){
@@ -206,6 +229,15 @@ function gameOver(){
 		fill(250, 80);
 		rect(538, 391, 130, 30, 20);
 	}
+}
+
+function initializeGame(){	//resets game variables
+	grassHeight = 270;
+	grassWidth = 7;
+	gapWidth = 3; 
+
+	tomatoHeight = 270;
+	paused = false;
 }
 
 function pauseScreen(){
@@ -247,9 +279,9 @@ function mouseClicked(){
 	}
 
 	//if click start button, start game
-	//***TODO: reset all variables
 	else if(gameMode===0){
 		if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
+			initializeGame();
 			gameMode = 1;
 		}
 	}
@@ -257,8 +289,8 @@ function mouseClicked(){
 	else if(gameMode===2){
 
 		//if click play again button, start new game
-		//***TODO: reset all variables
 		if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
+			initializeGame();
 			gameMode = 1;
 		}
 
