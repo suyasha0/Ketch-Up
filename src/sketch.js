@@ -10,7 +10,7 @@ var grassR;
 var grassHeight = 300;
 var grassWidth = 7;
 var gapWidth = 3; 
-var platformHeight = 300;
+var platformHeight = 300;	//work in progress leave me alone
 
 //Tomato Variables 
 var tomatoRunning = [];
@@ -42,8 +42,6 @@ var paused = false;
 var micInput;
 var gravity = 1;
 //var jump = false;
-
-
 
 function preload() {
 	//load tomato running gif 
@@ -229,7 +227,7 @@ function game(){
 	drawPlatforms();
 }
 
-function drawPlatforms(){
+function drawPlatforms(){ //work in progress leave me alone
 
 }
 
