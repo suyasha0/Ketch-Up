@@ -25,6 +25,7 @@ var potato;
 //Succulent Variables
 var succImgs = [];
 var succ;
+var succs = [];
 
 //Walking potato (walkingPotato) variables
 var walkingPotatoImgs = [];
@@ -41,6 +42,8 @@ var paused = false;
 var micInput;
 var gravity = 1;
 //var jump = false;
+
+
 
 function preload() {
 	//load tomato running gif 
@@ -91,13 +94,21 @@ function preload() {
 
 function setup(){
 	//create centered background
+	noiseDetail(24);
 	canvas = createCanvas(1000, 500);
 	var x = (windowWidth - width) / 2;
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
-	potato = new Enemy(130,250,potatoImgs,300,300);
-	succ = new Spike(0,0,succImgs,90,110); //90 width, 110 height
+	potato = new Tot(630,250,potatoImgs,332,332);
+	//original is 332 x 332 -> 300
+	//actual size is 61 x 81 *300/332
+	var succPositioning =0;
+	for (let i =0; i <11; i++){
+		succ = new Spike(succPositioning,0,succImgs,90,110);
+		succPositioning += 90;
+		succs.push(succ);
+	}
 	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
 
 
@@ -195,19 +206,25 @@ function game(){
 	//draw tomato running to the right
 	imageMode(CENTER);
 
-	
-	image(tomatoRunning[currentFrame%tomatoRunning.length], 0, tomatoHeight, 160, 120); //160 width, 120 height
+	//tomato body is 282 by 234
+	//actual image 800 by 600 
+	//scaled down by 5 so 282 > 56, 234 > 46
+	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120); //160 width, 120 height
 
 	potato.display();
+	potato.collisionTest();
 	walkingPotato.display();
 
 	imageMode(CORNER);
-	succ.display();
-	succ.collisionTest();
 
 	// image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	// image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
 	// image(succ[currentFrame%succ.length], 100, 60, 90, 110);
+
+	for (let i =0; i <11; i++){
+		succs[i].display();
+		succs[i].collisionTest();
+	}
 
 	drawPlatforms();
 }
@@ -317,7 +334,6 @@ class Enemy {
 		this.xSize = xSize;
 		this.ySize = ySize;
 		this.collide = false;
-		//this.frameRate = rate
 	
 		this.display = function(){
 			image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
@@ -332,12 +348,56 @@ class Spike extends Enemy { //90 width, 110 height, 0,0 is top left corner
 	collisionTest(){ //tomato 160 width, 120 height, centered
 		//var tomatoX = 50;
 		//var tomatoHeight = 250;
-		if ((tomatoHeight-60)<=(this.y+this.ySize) && (tomatoX+80)>=this.x && (tomatoX-80)<=(this.x+90) && (tomatoHeight+60)>this.y){
-//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant, bottom of tom below top of plant
+		//tomato body is 282 by 234
+	//actual image 800 by 600 scled to 160,120
+	//scaled down by 5 so 282 > 56, 234 > 46
+
+	//tall plant
+		if ((tomatoHeight-23)<=(this.y+this.ySize) && (tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize*50/110)) && (tomatoHeight+23)>this.y){
+//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant,				 bottom of tom below top of plant
 			this.collide = true;
 			gameMode = 2;
-
+//60/110 is the short pot, 50/110 is the tall plant width
+//87/120 is the short pot height
 		}
-		
+	//short plant
+		if ((tomatoHeight-23)<=(this.y+(this.ySize*87/120)) && (tomatoX+28)>=(this.x+(this.xSize*50/110)) && (tomatoX-28)<=(this.x+this.xSize) && (tomatoHeight+23)>this.y){
+//collision with toamto, top of tomato vs bottom , 			 right of tom left plant,  				left of tomato right plant,				 bottom of tom below top of plant
+			this.collide = true;
+			gameMode = 2;
+		}
+	}
+}
+
+class Tater extends Enemy { //potato with arms
+
+}
+
+function Tot(xPos,yPos,obj,xSize,ySize){ //no limbed potato
+	this.x = xPos;
+	this.y = yPos;
+	this.xSpeed = -3;
+	this.ySpeed = 0;
+	this.xSize = xSize;
+	this.ySize = ySize;
+	this.collide = false;
+	this.noiseOffset = random(0,1000);
+	this.noise = map( noise(this.noiseOffset), 0, 1, 0, 1.5 );
+	
+	//update in display
+	this.display = function(){
+		this.noise = map( noise(this.noiseOffset), 0, 1, 0, 1 );
+		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize*this.noise, this.ySize*this.noise);
+		this.noiseOffset+=0.01;
+	}
+
+	//original is 332 x 332 
+	//actual size is 61 x 81 /332
+	this.collisionTest = function(){
+		//			top tomato				bottom potato			right tomato	 left potato 					left tomato   	   right potato 				bottom of tomato
+		if ((tomatoHeight-23)<=(this.y+(this.ySize*this.noise *81/332 /2)) && (tomatoX+28)>=(this.x-(this.xSize*this.noise*61/331/2)) && (tomatoX-28)<=(this.x+(this.xSize*this.noise*61/331/2)) && (tomatoHeight+23)>this.y-(this.ySize*this.noise*81/332 /2)){
+			this.collide = true;
+			gameMode = 2;
+		}
 	}
 }
