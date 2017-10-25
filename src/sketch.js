@@ -17,6 +17,7 @@ var potato;
 //Succulent Variables
 var succImgs = [];
 var succ;
+var succs = [];
 
 //Walking potato (walkingPotato) variables
 var walkingPotatoImgs = [];
@@ -85,7 +86,16 @@ function setup(){
 	canvas.position(x, y);
 
 	potato = new Enemy(130,250,potatoImgs,300,300);
+	var succPositioning =0;
+	for (let i =0; i <11; i++){
+		succ = new Spike(succPositioning,0,succImgs,90,110);
+		succPositioning += 90;
+		succs.push(succ);
+	}
+	/*
 	succ = new Spike(0,0,succImgs,90,110); //90 width, 110 height
+	succ2 = new Spike(90,0,succImgs,90,110);
+	succ3 = new Spike(180,0,succImgs,90,110);*/
 	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
 
 
@@ -180,15 +190,19 @@ function game(){
 	//draw tomato running to the right
 	imageMode(CENTER);
 
-	
+	//tomato body is 282 by 234
+	//actual image 800 by 600 
+	//scaled down by 5 so 282 > 56, 234 > 46
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120); //160 width, 120 height
 
 	potato.display();
 	walkingPotato.display();
 
 	imageMode(CORNER);
-	succ.display();
-	succ.collisionTest();
+	for (let i =0; i <11; i++){
+		succs[i].display();
+		succs[i].collisionTest();
+	}
 /*
 	image(potato[currentFrame%potato.length], 130, 250, 300, 300);
 	image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
@@ -302,12 +316,23 @@ class Spike extends Enemy { //90 width, 110 height, 0,0 is top left corner
 	collisionTest(){ //tomato 160 width, 120 height, centered
 		//var tomatoX = 50;
 		//var tomatoHeight = 250;
-		if ((tomatoHeight-60)<=(this.y+this.ySize) && (tomatoX+80)>=this.x && (tomatoX-80)<=(this.x+90) && (tomatoHeight+60)>this.y){
-//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant, bottom of tom below top of plant
+		//tomato body is 282 by 234
+	//actual image 800 by 600 scled to 160,120
+	//scaled down by 5 so 282 > 56, 234 > 46
+
+	//tall plant
+		if ((tomatoHeight-23)<=(this.y+this.ySize) && (tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize*50/110)) && (tomatoHeight+23)>this.y){
+//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant,				 bottom of tom below top of plant
 			this.collide = true;
 			gameMode = 2;
-
+//60/110 is the short pot, 50/110 is the tall plant width
+//87/120 is the short pot height
 		}
-		
+	//short plant
+		if ((tomatoHeight-23)<=(this.y+(this.ySize*87/120)) && (tomatoX+28)>=(this.x+(this.xSize*50/110)) && (tomatoX-28)<=(this.x+this.xSize) && (tomatoHeight+23)>this.y){
+//collision with toamto, top of tomato vs bottom , 			 right of tom left plant,  				left of tomato right plant,				 bottom of tom below top of plant
+			this.collide = true;
+			gameMode = 2;
+		}
 	}
 }
