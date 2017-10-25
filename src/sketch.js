@@ -186,18 +186,20 @@ function game(){
 	}
 
 	//Tomato does not go below the platform height
-	if(currentHeight !== 0 && tomatoHeight >= currentHeight-30){
-		tomatoHeight = currentHeight-30;
+	if(platformHeight !== 0 && tomatoHeight >= platformHeight-30){
+		tomatoHeight = platformHeight-30;
 	}
 
 	//game over if tomato falls below the screen
 	if (tomatoHeight > 500){
+		initializeGame();
 		gameMode = 2;
 	}
 
 	//GAME OVER 
 	//TODO: If it touches enemy 
 	if(tomatoHeight > height){	//if it falls pass the bottom of canvas
+		initializeGame();
 		gameMode = 2;
 	}
 
@@ -252,6 +254,7 @@ function initializeGame(){	//resets game variables
 	gapWidth = 3; 
 
 	tomatoHeight = 270;
+	tomatoX = 50;
 	paused = false;
 }
 
@@ -311,6 +314,7 @@ function mouseClicked(){
 
 		//if click home button, go to start screen
 		else if(mouseX>=538.4 && mouseX<=590.5 && mouseY>=391 && mouseY<=408){
+			initializeGame();
 			gameMode = 0;
 		}
 	}
