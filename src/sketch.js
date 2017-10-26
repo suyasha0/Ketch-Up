@@ -63,6 +63,7 @@ function initializeGame(){	//resets game variables
 	//set up the initial platforms
 	platforms.push(new platformObj(platX, platY, platWidth, gapWidth));	//add the first platform
 
+	//continue adding new platforms to the array until there are at least enough on screen
 	while(platforms[platforms.length-1].platX + platforms[platforms.length-1].platWidth*50 + gapWidth <= 1000){
 		platX = platforms[platforms.length-1].platX + platWidth*50 + gapWidth; 
 		platY = map(noise(platNoise), 0, 1, 200, 450);
@@ -114,7 +115,7 @@ function preload() {
 	//load cursor graphic
 	cursorImg = loadImage("images/fry.png");
 
-	//load tile
+	//load tile images
 	grassL = loadImage("images/tiles/grassLeft.png");
 	grassM = loadImage("images/tiles/grassMid.png");
 	grassR = loadImage("images/tiles/grassRight.png");
@@ -147,13 +148,13 @@ function setup(){
 	//no cursor
 	noCursor();
 
+	//set up initial game variables
 	initializeGame();
 }
 
 function draw(){
 	background(250);
 	currentFrame += 1;
-	//console.log(currentFrame);
 	
 	if(paused){					//pause screen
 		pauseScreen();
@@ -177,7 +178,6 @@ function draw(){
 }
 
 function startScreen(){
-
 	imageMode(CORNER);
 	image(startscreen, 0, 0);
 
@@ -194,13 +194,13 @@ function startScreen(){
 }
 
 function game(){
-	//draw all platforms
+	//draw all platforms, they are constantly moving from the right to left at a rate of 2
 	for (var i = 0; i < platforms.length; i++){
 		platforms[i].display();
 		platforms[i].platX -= 2;
 	}
 
-	//add more platforms
+	//add more platforms if there is space on screen for one
 	if(platforms[platforms.length-1].platX + platforms[platforms.length-1].platWidth*50 + gapWidth <= 1000){
 		platX = platforms[platforms.length-1].platX + platWidth*50 + gapWidth; 
 		platY = map(noise(platNoise), 0, 1, 200, 450);
@@ -232,7 +232,8 @@ function game(){
 	//Tomato height is affected by gravity
 	tomatoHeight += gravity;
 
-	//Tomato does not go below the platform height
+	//Tomato does not go below the platform height 
+	//TODO: slightly glitchy? sometimes if tomato is part way through the platform it'll jerk back up I'm too tired to math
 	if(platforms[0] && tomatoHeight - platforms[0].platY <= 30 && tomatoX >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth > 0){
 		tomatoHeight = platforms[0].platY-30;
 	}
@@ -261,10 +262,6 @@ function game(){
 	walkingPotato.display();
 
 	imageMode(CORNER);
-
-	// image(potato[currentFrame%potato.length], 130, 250, 300, 300);
-	// image(potatoWalking[currentFrame%potatoWalking.length], 200, 250, 150, 120);
-	// image(succ[currentFrame%succ.length], 100, 60, 90, 110);
 
 	for (let i =0; i <11; i++){
 		succs[i].display();
@@ -303,7 +300,7 @@ function pauseScreen(){
 	}
 }
 
-function windowResized(){
+function windowResized(){	//ensures the canvas remains centered
 	var x = (windowWidth - width) / 2;
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
@@ -311,7 +308,6 @@ function windowResized(){
 
 function mouseClicked(){
 	if(paused){
-
 		//if click resume, resume game
 		if(mouseX>=416 && mouseX<=536 && mouseY>=258 && mouseY<=285){
 			gameMode = 1;
@@ -334,7 +330,6 @@ function mouseClicked(){
 	}
 
 	else if(gameMode===2){
-
 		//if click play again button, start new game
 		if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
 			initializeGame();
