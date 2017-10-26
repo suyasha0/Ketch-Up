@@ -184,6 +184,7 @@ function startScreen(){
 	//draw tomato running to the right
 	imageMode(CENTER);
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
+	image(succImgs[currentFrame%succImgs.length], 820, 50);
 
 	//highlight start button if mouseover
 	if(mouseX>=425 && mouseX<=583.5 && mouseY>=370 && mouseY<=443){
