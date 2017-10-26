@@ -61,6 +61,7 @@ function initializeGame(){	//resets game variables
 	platWidth = 8;
 	gapWidth = 150;
 	platforms = [];
+	succs = [];
 
 	//set up the initial platforms
 	platforms.push(new platformObj(platX, platY, platWidth, gapWidth));	//add the first platform
@@ -71,7 +72,7 @@ function initializeGame(){	//resets game variables
 		platY = map(noise(platNoise), 0, 1, 200, 450);
 		platWidth = random(2, 6);
 		gapWidth = random(100, 350);
-		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,false));
 		platNoise += 0.05;
 	}
 }
@@ -213,6 +214,9 @@ function game(){
 	for (var i = 0; i < platforms.length; i++){
 		platforms[i].display();
 		platforms[i].platX -= 2;
+		if (platforms[i].enemy != undefined){ //has an enemy
+
+		}
 	}
 
 	//add more platforms if there is space on screen for one
@@ -221,7 +225,7 @@ function game(){
 		platY = map(noise(platNoise), 0, 1, 200, 450);
 		platWidth = random(2, 6);
 		gapWidth = random(100, 350);
-		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,true));
 		platNoise += 0.5;
 	}
 	// HERE IS THE ONES AFTER THE INITIAL ONES SO HERE IS WHERE WE WANNA START GENERATING ENEMIES
@@ -231,36 +235,48 @@ function game(){
 		platforms.splice(0, 1);
 	}
 
+	//popping off succs
+	if (succs[0] && succs[0].x+90 <=0){
+		succs.splice(0,1);
+	}
+
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
 	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
-	if(vol > threshold){
-		tomatoHeight -= 5;
-		if(tomatoHeight < 0){ //Placeholder for triangle
-			fill(0);
-			triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
+		if(vol > threshold){	//if the tomato is moving up
+			if(platforms[0].platY+50 > tomatoHeight-28){	//check if the tomato is below a platform
+				tomatoHeight = platforms[0].platY+28;
+			}
+			else{
+				tomatoHeight -= 5;
+			}
+			if(tomatoHeight < 0){ 	//Placeholder for triangle
+				fill(0);
+				triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+			}
+		}
+		else{	//if the tomato is moving down
+			if(tomatoHeight + 30 - platforms[0].platY < 10){	//Tomato does not fall through platforms
+				tomatoHeight = platforms[0].platY-25;	
+			}
+			else{
+				tomatoHeight +=gravity;
+			}
 		}
 	}
-
-	//Tomato speed is added to tomato to move it horizontally
-	tomatoX += tomatoSpeed;
-	//Tomato height is affected by gravity
-	tomatoHeight += gravity;
-
-	//Tomato does not go below the platform height 
-	//TODO: slightly glitchy? sometimes if tomato is part way through the platform it'll jerk back up I'm too tired to math
-	//outer if is just like if between a platform
-	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
-
-		if(platforms[0].platY <= tomatoHeight + 30){	//Tomato does not fall through platforms
-			console.log("above")
-			tomatoHeight = platforms[0].platY-30;
+	else{	//handle if the tomato is in a gap space
+		if(vol > threshold){
+			tomatoHeight -= 5;
+			if(tomatoHeight < 0){ 	//Placeholder for triangle
+				fill(0);
+				triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+			}
 		}
-		else if (tomatoHeight-30 < platforms[0].platY+50){	//Tomato does not go through platforms
-			console.log("below");
-			tomatoHeight = platforms[0].platY+30;
-		}
+
+		tomatoX += tomatoSpeed;		//Tomato speed is added to tomato to move it horizontally
+		tomatoHeight += gravity;	//Tomato height is affected by gravity
 	}
 
 	//Temporary: Tomato restarts at the left side of canvas
@@ -290,27 +306,39 @@ function game(){
 
 	imageMode(CORNER);
 //succulents
-	for (let i =0; i <4; i++){
+	for (let i =0; i <succs.length; i++){
 		succs[i].display();
 		succs[i].collisionTest();
 	}
 }
 
-function platformObj(platX, platY, platWidth, gapWidth){
+function platformObj(platX, platY, platWidth, gapWidth,ya){
 	this.platX = platX;			//the X position of the upper left corner of platform
 	this.platY = platY;			//the Y position of the upper left corner of platform
 	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
 	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
-	this.chanceOfEnemySpawn = random(50);
+	if (ya){
+		this.chanceOfEnemySpawn = random(50);
+	} else{
+		this.chanceOfEnemySpawn = 51;
+	}
+	
+	this.enemy;
 
 	//generates enemies based on random numbers
-	if(this.chanceOfEnemySpawn<5){
+	if(this.chanceOfEnemySpawn<6){ //walking potato?
 		//TODO: generate an enemy between given platform's X and X+platWidth*50
+		//imageMode(CORNER);
+		
 	}
-	else if(this.chanceOfEnemySpawn<20){
-		//TODO: generate an enemy between given platform's X and X+platWidth*50
+	else if(this.chanceOfEnemySpawn<20){ //succ
+		var platSucc;
+		for (let i = 1;i<this.platWidth; i+=2){
+			platSucc = new Spike(platX+(45*i),this.platY-180,succImgs,90,110);
+			succs.push(platSucc);
+		}
 	}
-	else if(this.chanceOfEnemySpawn<40){
+	else if(this.chanceOfEnemySpawn<40){ //size potato
 		//TODO: generate an enemy between given platform's X and X+platWidth*50
 	}
 
@@ -323,26 +351,36 @@ function platformObj(platX, platY, platWidth, gapWidth){
 	}
 }
 
-function Spike(xPos,yPos,obj,xSize,ySize) {
+function Spike(xPos,yPos,obj,xSize,ySize) { //x and y are top left
 //	constructor(xPos,yPos,obj,xSize,ySize){
 	this.x = xPos;
 	this.y = yPos;
-	this.xSpeed = -3;
+	this.xSpeed = -2;
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
 	this.collide = false;
+	
 
 	this.display = function(){
 		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
+		this.x += this.xSpeed;
 	};
 	this.collisionTest=function(){ //tomato 160 width, 120 height, centered
+		//need to make it stop above succs
+		if ((tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize)) && (tomatoHeight+35)>=this.y && (tomatoHeight< this.y) ){
+			// right of tom left plant, left of tom right plant, 	and bottom of tomato is below top of  plant, top of tomato is above plant
+			tomatoHeight = this.y -35;
+			//console.log("top of tomato this happens???");
+		}
+
 
 	//tall plant
 		if ((tomatoHeight-23)<=(this.y+this.ySize) && (tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize*50/110)) && (tomatoHeight+23)>this.y){
 //collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant,				 bottom of tom below top of plant
 			this.collide = true;
 			gameMode = 2;
+		//	console.log("collision with tall plant this happens???");
 //60/110 is the short pot, 50/110 is the tall plant width
 //87/120 is the short pot height
 		}
@@ -351,6 +389,7 @@ function Spike(xPos,yPos,obj,xSize,ySize) {
 //collision with toamto, top of tomato vs bottom , 			 right of tom left plant,  				left of tomato right plant,				 bottom of tom below top of plant
 			this.collide = true;
 			gameMode = 2;
+		//	console.log("collision with short plant this happens???");
 		}
 	}
 }
@@ -358,7 +397,7 @@ function Spike(xPos,yPos,obj,xSize,ySize) {
 function Tater(xPos,yPos,obj,xSize,ySize) { //potato with arms
 	this.x = xPos;
 	this.y = yPos;
-	this.xSpeed = -3;
+	this.xSpeed = -2;
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
@@ -372,7 +411,7 @@ function Tater(xPos,yPos,obj,xSize,ySize) { //potato with arms
 function Tot(xPos,yPos,obj,xSize,ySize){ //no limbed potato
 	this.x = xPos;
 	this.y = yPos;
-	this.xSpeed = -3;
+	this.xSpeed = -2;
 	this.ySpeed = 0;
 	this.xSize = xSize;
 	this.ySize = ySize;
