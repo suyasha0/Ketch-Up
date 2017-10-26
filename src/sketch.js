@@ -186,7 +186,7 @@ function startScreen(){
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
 
 	//highlight start button if mouseover
-	if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
+	if(mouseX>=425 && mouseX<=583.5 && mouseY>=370 && mouseY<=443){
 		noStroke();
 		fill(255, 80);
 		rect(417, 310, 160, 68, 20);
@@ -323,7 +323,7 @@ function mouseClicked(){
 
 	//if click start button, start game
 	else if(gameMode===0){
-		if(mouseX>=434.5 && mouseX<=583.5 && mouseY>=391 && mouseY<=443){
+		if(mouseX>=425 && mouseX<=583.5 && mouseY>=370 && mouseY<=443){
 			initializeGame();
 			gameMode = 1;
 		}
