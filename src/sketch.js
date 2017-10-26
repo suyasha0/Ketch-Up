@@ -247,7 +247,7 @@ function game(){
 	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
 		if(vol > threshold){	//if the tomato is moving up
 			if(platforms[0].platY+50 > tomatoHeight-28){	//check if the tomato is below a platform
-				tomatoHeight = platforms[0].platY+28;
+				tomatoHeight = platforms[0].platY+78;
 			}
 			else{
 				tomatoHeight -= 5;
