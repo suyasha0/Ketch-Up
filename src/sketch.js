@@ -24,6 +24,7 @@ var tomatoSpeed = 0;
 //Potato Variables
 var potatoImgs = [];
 var potato;
+var potatos = [];
 
 //Succulent Variables
 var succImgs = [];
@@ -33,6 +34,7 @@ var succs = [];
 //Walking potato (walkingPotato) variables
 var walkingPotatoImgs = [];
 var walkingPotato;
+var walkingPotatos = [];
 
 var startscreen, endscreen, pausescreen;
 var cursorImg;
@@ -59,6 +61,7 @@ function initializeGame(){	//resets game variables
 	platWidth = 8;
 	gapWidth = 150;
 	platforms = [];
+	succs = [];
 
 	//set up the initial platforms
 	platforms.push(new platformObj(platX, platY, platWidth, gapWidth));	//add the first platform
@@ -69,7 +72,7 @@ function initializeGame(){	//resets game variables
 		platY = map(noise(platNoise), 0, 1, 200, 450);
 		platWidth = random(2, 6);
 		gapWidth = random(100, 350);
-		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,false));
 		platNoise += 0.05;
 	}
 }
@@ -129,17 +132,25 @@ function setup(){
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
 
-	potato = new Tot(630,250,potatoImgs,332,332);
+
+	var potatoPositioningX =630;
+	var potatoPositioningY =250;
+	for (let i =0; i <4; i++){
+		potato = new Tot(potatoPositioningX,potatoPositioningY,potatoImgs,332,332);
+		potatoPositioningX +=200;
+		potatos.push(potato);
+	}
+	
 	//original is 332 x 332 -> 300
 	//actual size is 61 x 81 *300/332
 	var succPositioning =0;
-	for (let i =0; i <11; i++){
+	for (let i =0; i <4; i++){
 		succ = new Spike(succPositioning,0,succImgs,90,110);
 		succPositioning += 90;
 		succs.push(succ);
 	}
-	walkingPotato = new Enemy(200,250,walkingPotatoImgs,150,120);
-
+	walkingPotato = new Tater(200,250,walkingPotatoImgs,70,105);
+	//original is 280 x 420
 
 	//audio input
 	micInput = new p5.AudioIn();
@@ -203,15 +214,8 @@ function game(){
 	for (var i = 0; i < platforms.length; i++){
 		platforms[i].display();
 		platforms[i].platX -= 2;
-		//generates enemies based on random numbers
-		if(platforms[i].chanceOfEnemySpawn<5){
-			//TODO: generate an enemy between given platform's X and X+platWidth*50
-		}
-		else if(platforms[i].chanceOfEnemySpawn<15){
-			//TODO: generate an enemy between given platform's X and X+platWidth*50
-		}
-		else if(platforms[i].chanceOfEnemySpawn<30){
-			//TODO: generate an enemy between given platform's X and X+platWidth*50
+		if (platforms[i].enemy != undefined){ //has an enemy
+
 		}
 	}
 
@@ -221,25 +225,29 @@ function game(){
 		platY = map(noise(platNoise), 0, 1, 200, 450);
 		platWidth = random(2, 6);
 		gapWidth = random(100, 350);
-		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,true));
 		platNoise += 0.5;
 	}
+	// HERE IS THE ONES AFTER THE INITIAL ONES SO HERE IS WHERE WE WANNA START GENERATING ENEMIES
 
 	//platforms should be deleted from the array after they leave the screen
 	if(platforms[0].platX + 50*platforms[0].platWidth + 40 <= 0){
 		platforms.splice(0, 1);
 	}
 
+	//popping off succs
+	if (succs[0] && succs[0].x+90 <=0){
+		succs.splice(0,1);
+	}
+
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
 	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
-
-	//handle if the tomato is above/below a platform
 	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
 		if(vol > threshold){	//if the tomato is moving up
 			if(platforms[0].platY+50 > tomatoHeight-28){	//check if the tomato is below a platform
-				tomatoHeight = platforms[0].platY+78;
+				tomatoHeight = platforms[0].platY+28;
 			}
 			else{
 				tomatoHeight -= 5;
@@ -285,22 +293,150 @@ function game(){
 	//draw tomato running to the right
 	imageMode(CENTER);
 
-	//tomato body is 282 by 234
-	//actual image 800 by 600 
-	//scaled down by 5 so 282 > 56, 234 > 46
 	image(tomatoRunning[currentFrame%tomatoRunning.length], tomatoX, tomatoHeight, 160, 120); //160 width, 120 height
 
-	potato.display();
-	potato.collisionTest();
+	//walking potatoes
 	walkingPotato.display();
 
-	imageMode(CORNER);
+	//potatoes
+	for (let i =0; i <4; i++){
+		potatos[i].display();
+		potatos[i].collisionTest();
+	}
 
-	for (let i =0; i <11; i++){
+	imageMode(CORNER);
+//succulents
+	for (let i =0; i <succs.length; i++){
 		succs[i].display();
 		succs[i].collisionTest();
 	}
 }
+
+function platformObj(platX, platY, platWidth, gapWidth,ya){
+	this.platX = platX;			//the X position of the upper left corner of platform
+	this.platY = platY;			//the Y position of the upper left corner of platform
+	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
+	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
+	if (ya){
+		this.chanceOfEnemySpawn = random(50);
+	} else{
+		this.chanceOfEnemySpawn = 51;
+	}
+	
+	this.enemy;
+
+	//generates enemies based on random numbers
+	if(this.chanceOfEnemySpawn<6){ //walking potato?
+		//TODO: generate an enemy between given platform's X and X+platWidth*50
+		//imageMode(CORNER);
+		
+	}
+	else if(this.chanceOfEnemySpawn<20){ //succ
+		var platSucc;
+		for (let i = 1;i<this.platWidth; i+=2){
+			platSucc = new Spike(platX+(45*i),this.platY-180,succImgs,90,110);
+			succs.push(platSucc);
+		}
+	}
+	else if(this.chanceOfEnemySpawn<40){ //size potato
+		//TODO: generate an enemy between given platform's X and X+platWidth*50
+	}
+
+	this.display = function(){	//function for showing the platforms; first and last blocks are rounded 
+		image(grassL, this.platX, this.platY, 50, 50);
+		for (var i = 1; i < this.platWidth; i++){
+			image(grassM, this.platX + 50*i, this.platY, 50, 50);
+		}
+		image(grassR, this.platX + 50*this.platWidth, this.platY, 50, 50);
+	}
+}
+
+function Spike(xPos,yPos,obj,xSize,ySize) { //x and y are top left
+//	constructor(xPos,yPos,obj,xSize,ySize){
+	this.x = xPos;
+	this.y = yPos;
+	this.xSpeed = -2;
+	this.ySpeed = 0;
+	this.xSize = xSize;
+	this.ySize = ySize;
+	this.collide = false;
+	
+
+	this.display = function(){
+		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
+		this.x += this.xSpeed;
+	};
+	this.collisionTest=function(){ //tomato 160 width, 120 height, centered
+		//need to make it stop above succs
+		if ((tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize)) && (tomatoHeight+35)>=this.y && (tomatoHeight< this.y) ){
+			// right of tom left plant, left of tom right plant, 	and bottom of tomato is below top of  plant, top of tomato is above plant
+			tomatoHeight = this.y -35;
+			//console.log("top of tomato this happens???");
+		}
+
+
+	//tall plant
+		if ((tomatoHeight-23)<=(this.y+this.ySize) && (tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize*50/110)) && (tomatoHeight+23)>this.y){
+//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant,				 bottom of tom below top of plant
+			this.collide = true;
+			gameMode = 2;
+		//	console.log("collision with tall plant this happens???");
+//60/110 is the short pot, 50/110 is the tall plant width
+//87/120 is the short pot height
+		}
+	//short plant
+		if ((tomatoHeight-23)<=(this.y+(this.ySize*87/120)) && (tomatoX+28)>=(this.x+(this.xSize*50/110)) && (tomatoX-28)<=(this.x+this.xSize) && (tomatoHeight+23)>this.y){
+//collision with toamto, top of tomato vs bottom , 			 right of tom left plant,  				left of tomato right plant,				 bottom of tom below top of plant
+			this.collide = true;
+			gameMode = 2;
+		//	console.log("collision with short plant this happens???");
+		}
+	}
+}
+
+function Tater(xPos,yPos,obj,xSize,ySize) { //potato with arms
+	this.x = xPos;
+	this.y = yPos;
+	this.xSpeed = -2;
+	this.ySpeed = 0;
+	this.xSize = xSize;
+	this.ySize = ySize;
+	this.collide = false;
+	//update in display
+	this.display = function(){
+		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
+	}
+}
+
+function Tot(xPos,yPos,obj,xSize,ySize){ //no limbed potato
+	this.x = xPos;
+	this.y = yPos;
+	this.xSpeed = -2;
+	this.ySpeed = 0;
+	this.xSize = xSize;
+	this.ySize = ySize;
+	this.collide = false;
+	this.noiseOffset = random(0,1000);
+	this.noise = map( noise(this.noiseOffset), 0, 1, 0, 1.5 );
+	
+	//update in display
+	this.display = function(){
+		this.noise = map( noise(this.noiseOffset), 0, 1, 0, 1 );
+		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize*this.noise, this.ySize*this.noise);
+		this.noiseOffset+=0.01;
+	}
+
+	//original is 332 x 332 
+	//actual size is 61 x 81 /332
+	this.collisionTest = function(){
+		//			top tomato				bottom potato			right tomato	 left potato 					left tomato   	   right potato 				bottom of tomato
+		if ((tomatoHeight-23)<=(this.y+(this.ySize*this.noise *81/332 /2)) && (tomatoX+28)>=(this.x-(this.xSize*this.noise*61/331/2)) && (tomatoX-28)<=(this.x+(this.xSize*this.noise*61/331/2)) && (tomatoHeight+23)>this.y-(this.ySize*this.noise*81/332 /2)){
+			this.collide = true;
+			gameMode = 2;
+		}
+	}
+}
+
 
 function gameOver(){
 	image(endscreen, 0, 0);
@@ -381,99 +517,5 @@ function keyPressed(){
 	//if spacebar pressed, pause game
 	if(keyCode == 32 && gameMode==1){
 		paused = true;
-	}
-}
-
-function platformObj(platX, platY, platWidth, gapWidth){
-	this.platX = platX;			//the X position of the upper left corner of platform
-	this.platY = platY;			//the Y position of the upper left corner of platform
-	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
-	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
-	this.chanceOfEnemySpawn = random(50);
-
-	this.display = function(){	//function for showing the platforms; first and last blocks are rounded
-		imageMode(CORNER);
-		image(grassL, this.platX, this.platY, 50, 50);
-		for (var i = 1; i < this.platWidth; i++){
-			image(grassM, this.platX + 50*i, this.platY, 50, 50);
-		}
-		image(grassR, this.platX + 50*this.platWidth, this.platY, 50, 50);
-	}
-}
-
-class Enemy {
-	constructor(xPos,yPos,obj,xSize,ySize){
-		this.x = xPos;
-		this.y = yPos;
-		this.xSpeed = -3;
-		this.ySpeed = 0;
-		this.xSize = xSize;
-		this.ySize = ySize;
-		this.collide = false;
-	
-		this.display = function(){
-			image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
-		};
-	}
-}
-
-class Spike extends Enemy { //90 width, 110 height, 0,0 is top left corner
-	constructor (xPos,yPos,obj,xSize,ySize){
-		super(xPos,yPos,obj,xSize,ySize);
-	}
-	collisionTest(){ //tomato 160 width, 120 height, centered
-		//var tomatoX = 50;
-		//var tomatoHeight = 250;
-		//tomato body is 282 by 234
-	//actual image 800 by 600 scled to 160,120
-	//scaled down by 5 so 282 > 56, 234 > 46
-
-	//tall plant
-		if ((tomatoHeight-23)<=(this.y+this.ySize) && (tomatoX+28)>=this.x && (tomatoX-28)<=(this.x+(this.xSize*50/110)) && (tomatoHeight+23)>this.y){
-//collision with toamto, top of tomato vs bottom ,  right of tom left plant,  left of tomato right plant,				 bottom of tom below top of plant
-			this.collide = true;
-			gameMode = 2;
-//60/110 is the short pot, 50/110 is the tall plant width
-//87/120 is the short pot height
-		}
-	//short plant
-		if ((tomatoHeight-23)<=(this.y+(this.ySize*87/120)) && (tomatoX+28)>=(this.x+(this.xSize*50/110)) && (tomatoX-28)<=(this.x+this.xSize) && (tomatoHeight+23)>this.y){
-//collision with toamto, top of tomato vs bottom , 			 right of tom left plant,  				left of tomato right plant,				 bottom of tom below top of plant
-			this.collide = true;
-			gameMode = 2;
-		}
-	}
-}
-
-class Tater extends Enemy { //potato with arms
-
-}
-
-function Tot(xPos,yPos,obj,xSize,ySize){ //no limbed potato
-	this.x = xPos;
-	this.y = yPos;
-	this.xSpeed = -3;
-	this.ySpeed = 0;
-	this.xSize = xSize;
-	this.ySize = ySize;
-	this.collide = false;
-	this.noiseOffset = random(0,1000);
-	this.noise = map( noise(this.noiseOffset), 0, 1, 0, 1.5 );
-	
-	//update in display
-	this.display = function(){
-		this.noise = map( noise(this.noiseOffset), 0, 1, 0, 1 );
-		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize*this.noise, this.ySize*this.noise);
-		this.noiseOffset+=0.01;
-	}
-
-	//original is 332 x 332 
-	//actual size is 61 x 81 /332
-	this.collisionTest = function(){
-		//			top tomato				bottom potato			right tomato	 left potato 					left tomato   	   right potato 				bottom of tomato
-		if ((tomatoHeight-23)<=(this.y+(this.ySize*this.noise *81/332 /2)) && (tomatoX+28)>=(this.x-(this.xSize*this.noise*61/331/2)) && (tomatoX-28)<=(this.x+(this.xSize*this.noise*61/331/2)) && (tomatoHeight+23)>this.y-(this.ySize*this.noise*81/332 /2)){
-			this.collide = true;
-			gameMode = 2;
-		}
 	}
 }
