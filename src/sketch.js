@@ -239,7 +239,7 @@ function game(){
 
 	//Tomato does not go below the platform height 
 	//TODO: slightly glitchy? sometimes if tomato is part way through the platform it'll jerk back up I'm too tired to math
-	if(platforms[0] && tomatoHeight - platforms[0].platY <= 30 && tomatoX >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth > 0){
+	if(platforms[0] && tomatoHeight - platforms[0].platY <= 30 && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
 		tomatoHeight = platforms[0].platY-30;
 	}
 
