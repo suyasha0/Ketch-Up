@@ -234,27 +234,41 @@ function game(){
 	var vol = micInput.getLevel();
 	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
-	if(vol > threshold){
-		tomatoHeight -= 5;
-		if(tomatoHeight < 0){ //Placeholder for triangle
-			fill(0);
-			triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+
+	//handle if the tomato is above/below a platform
+	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
+		if(vol > threshold){	//if the tomato is moving up
+			if(platforms[0].platY+50 > tomatoHeight-28){	//check if the tomato is below a platform
+				tomatoHeight = platforms[0].platY+78;
+			}
+			else{
+				tomatoHeight -= 5;
+			}
+			if(tomatoHeight < 0){ 	//Placeholder for triangle
+				fill(0);
+				triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+			}
+		}
+		else{	//if the tomato is moving down
+			if(tomatoHeight + 30 - platforms[0].platY < 10){	//Tomato does not fall through platforms
+				tomatoHeight = platforms[0].platY-25;	
+			}
+			else{
+				tomatoHeight +=gravity;
+			}
 		}
 	}
-
-	//Tomato speed is added to tomato to move it horizontally
-	tomatoX += tomatoSpeed;
-	//Tomato height is affected by gravity
-	tomatoHeight += gravity;
-
-	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
-		if(platforms[0].platY <= tomatoHeight + 30){	//Tomato does not fall through platforms
-			console.log("above")
-			tomatoHeight = platforms[0].platY+30;
+	else{	//handle if the tomato is in a gap space
+		if(vol > threshold){
+			tomatoHeight -= 5;
+			if(tomatoHeight < 0){ 	//Placeholder for triangle
+				fill(0);
+				triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+			}
 		}
-		else if (tomatoHeight-30 < platforms[0].platY+50){	//Tomato does not go through platforms
-			console.log("below");
-		}
+
+		tomatoX += tomatoSpeed;		//Tomato speed is added to tomato to move it horizontally
+		tomatoHeight += gravity;	//Tomato height is affected by gravity
 	}
 
 	//Temporary: Tomato restarts at the left side of canvas
@@ -377,7 +391,8 @@ function platformObj(platX, platY, platWidth, gapWidth){
 	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
 	this.chanceOfEnemySpawn = random(50);
 
-	this.display = function(){	//function for showing the platforms; first and last blocks are rounded 
+	this.display = function(){	//function for showing the platforms; first and last blocks are rounded
+		imageMode(CORNER);
 		image(grassL, this.platX, this.platY, 50, 50);
 		for (var i = 1; i < this.platWidth; i++){
 			image(grassM, this.platX + 50*i, this.platY, 50, 50);
