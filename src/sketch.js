@@ -1,22 +1,25 @@
 //Declare and intialize variables 
 var canvas;
 
-var currentFrame = 0;
+var currentFrame;
 
 //tile variable
 var grassL;
 var grassM;
 var grassR;
-var grassHeight = 300;
-var grassWidth = 7;
-var gapWidth = 3; 
-var platformHeight = 300;	//work in progress leave me alone
+var platforms = [];
+
+var platX;
+var platY;
+var platWidth;
+var gapWidth;
+var platNoise = 0;
 
 //Tomato Variables 
 var tomatoRunning = [];
 var tomatoX = 50;
 var tomatoHeight = 270;
-var tomatoSpeed = 3;
+var tomatoSpeed = 0;
 
 //Potato Variables
 var potatoImgs = [];
@@ -42,6 +45,33 @@ var paused = false;
 var micInput;
 var gravity = 1;
 //var jump = false;
+
+function initializeGame(){	//resets game variables
+	paused = false;
+
+	currentFrame = 0;
+
+	tomatoHeight = 270;
+	tomatoX = 50;
+
+	platX = -50;	//first platform is off the screen because the first one shouldn't be rounded
+	platY = 300;
+	platWidth = 8;
+	gapWidth = 150;
+	platforms = [];
+
+	//set up the initial platforms
+	platforms.push(new platformObj(platX, platY, platWidth, gapWidth));	//add the first platform
+
+	while(platforms[platforms.length-1].platX + platforms[platforms.length-1].platWidth*50 + gapWidth <= 1000){
+		platX = platforms[platforms.length-1].platX + platWidth*50 + gapWidth; 
+		platY = map(noise(platNoise), 0, 1, 200, 450);
+		platWidth = random(2, 6);
+		gapWidth = random(100, 350);
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
+		platNoise += 0.05;
+	}
+}
 
 function preload() {
 	//load tomato running gif 
@@ -116,6 +146,8 @@ function setup(){
 
 	//no cursor
 	noCursor();
+
+	initializeGame();
 }
 
 function draw(){
@@ -162,17 +194,37 @@ function startScreen(){
 }
 
 function game(){
+	//draw all platforms
+	for (var i = 0; i < platforms.length; i++){
+		platforms[i].display();
+		platforms[i].platX -= 2;
+	}
+
+	//add more platforms
+	if(platforms[platforms.length-1].platX + platforms[platforms.length-1].platWidth*50 + gapWidth <= 1000){
+		platX = platforms[platforms.length-1].platX + platWidth*50 + gapWidth; 
+		platY = map(noise(platNoise), 0, 1, 200, 450);
+		platWidth = random(2, 6);
+		gapWidth = random(100, 350);
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
+		platNoise += 0.5;
+	}
+
+	//platforms should be deleted from the array after they leave the screen
+	if(platforms[0].platX + 50*platforms[0].platWidth + 40 <= 0){
+		platforms.splice(0, 1);
+	}
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
 	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
 	if(vol > threshold){
-		tomatoHeight -= 5;	
-	}
-	if(tomatoHeight < 0){ //Placeholder for triangle
-		fill(0);
-		triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+		tomatoHeight -= 5;
+		if(tomatoHeight < 0){ //Placeholder for triangle
+			fill(0);
+			triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+		}
 	}
 
 	//Tomato speed is added to tomato to move it horizontally
@@ -180,25 +232,18 @@ function game(){
 	//Tomato height is affected by gravity
 	tomatoHeight += gravity;
 
+	//Tomato does not go below the platform height
+	if(platforms[0] && tomatoHeight - platforms[0].platY <= 30 && tomatoX >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth > 0){
+		tomatoHeight = platforms[0].platY-30;
+	}
+
 	//Temporary: Tomato restarts at the left side of canvas
 	if(tomatoX > width - 50){
 		tomatoX = 50;
 	}
 
-	//Tomato does not go below the platform height
-	if(platformHeight !== 0 && tomatoHeight >= platformHeight-30){
-		tomatoHeight = platformHeight-30;
-	}
-
 	//game over if tomato falls below the screen
-	if (tomatoHeight > 500){
-		initializeGame();
-		gameMode = 2;
-	}
-
-	//GAME OVER 
-	//TODO: If it touches enemy 
-	if(tomatoHeight > height){	//if it falls pass the bottom of canvas
+	if (tomatoHeight > 550){
 		initializeGame();
 		gameMode = 2;
 	}
@@ -225,12 +270,6 @@ function game(){
 		succs[i].display();
 		succs[i].collisionTest();
 	}
-
-	drawPlatforms();
-}
-
-function drawPlatforms(){ //work in progress leave me alone
-
 }
 
 function gameOver(){
@@ -246,16 +285,6 @@ function gameOver(){
 		fill(250, 80);
 		rect(538, 391, 130, 30, 20);
 	}
-}
-
-function initializeGame(){	//resets game variables
-	grassHeight = 270;
-	grassWidth = 7;
-	gapWidth = 3; 
-
-	tomatoHeight = 270;
-	tomatoX = 50;
-	paused = false;
 }
 
 function pauseScreen(){
@@ -324,6 +353,21 @@ function keyPressed(){
 	//if spacebar pressed, pause game
 	if(keyCode == 32 && gameMode==1){
 		paused = true;
+	}
+}
+
+function platformObj(platX, platY, platWidth, gapWidth){
+	this.platX = platX;			//the X position of the upper left corner of platform
+	this.platY = platY;			//the Y position of the upper left corner of platform
+	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
+	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
+
+	this.display = function(){	//function for showing the platforms; first and last blocks are rounded 
+		image(grassL, this.platX, this.platY, 50, 50);
+		for (var i = 1; i < this.platWidth; i++){
+			image(grassM, this.platX + 50*i, this.platY, 50, 50);
+		}
+		image(grassR, this.platX + 50*this.platWidth, this.platY, 50, 50);
 	}
 }
 
