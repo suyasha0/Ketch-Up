@@ -203,6 +203,16 @@ function game(){
 	for (var i = 0; i < platforms.length; i++){
 		platforms[i].display();
 		platforms[i].platX -= 2;
+		//generates enemies based on random numbers
+		if(platforms[i].chanceOfEnemySpawn<5){
+			//TODO: generate an enemy between given platform's X and X+platWidth*50
+		}
+		else if(platforms[i].chanceOfEnemySpawn<15){
+			//TODO: generate an enemy between given platform's X and X+platWidth*50
+		}
+		else if(platforms[i].chanceOfEnemySpawn<30){
+			//TODO: generate an enemy between given platform's X and X+platWidth*50
+		}
 	}
 
 	//add more platforms if there is space on screen for one
@@ -361,6 +371,7 @@ function platformObj(platX, platY, platWidth, gapWidth){
 	this.platY = platY;			//the Y position of the upper left corner of platform
 	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
 	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
+	this.chanceOfEnemySpawn = random(50);
 
 	this.display = function(){	//function for showing the platforms; first and last blocks are rounded 
 		image(grassL, this.platX, this.platY, 50, 50);
