@@ -213,16 +213,6 @@ function game(){
 	for (var i = 0; i < platforms.length; i++){
 		platforms[i].display();
 		platforms[i].platX -= 2;
-		//generates enemies based on random numbers
-		if(platforms[i].chanceOfEnemySpawn<5){
-			//TODO: generate an enemy between given platform's X and X+platWidth*50
-		}
-		else if(platforms[i].chanceOfEnemySpawn<15){
-			//TODO: generate an enemy between given platform's X and X+platWidth*50
-		}
-		else if(platforms[i].chanceOfEnemySpawn<30){
-			//TODO: generate an enemy between given platform's X and X+platWidth*50
-		}
 	}
 
 	//add more platforms if there is space on screen for one
@@ -234,6 +224,7 @@ function game(){
 		platforms.push(new platformObj(platX, platY, platWidth, gapWidth));
 		platNoise += 0.5;
 	}
+	// HERE IS THE ONES AFTER THE INITIAL ONES SO HERE IS WHERE WE WANNA START GENERATING ENEMIES
 
 	//platforms should be deleted from the array after they leave the screen
 	if(platforms[0].platX + 50*platforms[0].platWidth + 40 <= 0){
@@ -259,8 +250,17 @@ function game(){
 
 	//Tomato does not go below the platform height 
 	//TODO: slightly glitchy? sometimes if tomato is part way through the platform it'll jerk back up I'm too tired to math
-	if(platforms[0] && tomatoHeight - platforms[0].platY <= 30 && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
-		tomatoHeight = platforms[0].platY-30;
+	//outer if is just like if between a platform
+	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
+
+		if(platforms[0].platY <= tomatoHeight + 30){	//Tomato does not fall through platforms
+			console.log("above")
+			tomatoHeight = platforms[0].platY-30;
+		}
+		else if (tomatoHeight-30 < platforms[0].platY+50){	//Tomato does not go through platforms
+			console.log("below");
+			tomatoHeight = platforms[0].platY+30;
+		}
 	}
 
 	//Temporary: Tomato restarts at the left side of canvas
@@ -294,7 +294,6 @@ function game(){
 		succs[i].display();
 		succs[i].collisionTest();
 	}
-	
 }
 
 function platformObj(platX, platY, platWidth, gapWidth){
@@ -303,6 +302,17 @@ function platformObj(platX, platY, platWidth, gapWidth){
 	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
 	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
 	this.chanceOfEnemySpawn = random(50);
+
+	//generates enemies based on random numbers
+	if(this.chanceOfEnemySpawn<5){
+		//TODO: generate an enemy between given platform's X and X+platWidth*50
+	}
+	else if(this.chanceOfEnemySpawn<20){
+		//TODO: generate an enemy between given platform's X and X+platWidth*50
+	}
+	else if(this.chanceOfEnemySpawn<40){
+		//TODO: generate an enemy between given platform's X and X+platWidth*50
+	}
 
 	this.display = function(){	//function for showing the platforms; first and last blocks are rounded 
 		image(grassL, this.platX, this.platY, 50, 50);
