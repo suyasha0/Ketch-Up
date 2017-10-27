@@ -249,28 +249,13 @@ function game(){
 	var vol = micInput.getLevel();
 	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
-
-	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
-		if(vol > threshold){	//if the tomato is moving up
-			if(platforms[0].platY+50 > tomatoHeight-28){	//check if the tomato is below a platform
-				tomatoHeight = platforms[0].platY+78;
-			}
-			else{
-				tomatoHeight -= 5;
-			}
-			if(tomatoHeight < 0){ 	//Placeholder for triangle
-				fill(0);
-				triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
-			}
-		}
-		else{	//if the tomato is moving down
-			if(tomatoHeight + 30 - platforms[0].platY < 10){	//Tomato does not fall through platforms
-				tomatoHeight = platforms[0].platY-25;	
-			}
-			else{
-				tomatoHeight +=gravity;
-			}
-		}
+	if(vol > threshold){
+		tomatoHeight -= 5;
+		
+	}
+	if(tomatoHeight < 0){ //Placeholder for triangle
+		fill(0);
+		triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
 	}
 
 	//Tomato speed is added to tomato to move it horizontally
