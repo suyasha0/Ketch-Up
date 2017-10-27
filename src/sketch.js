@@ -247,35 +247,53 @@ function game(){
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	//console.log(vol);
 	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
-	if(vol > threshold){
-		tomatoHeight -= 5;
-		
+	if(platforms[0] && tomatoX+30 >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth > 0){
+		if(vol > threshold){	//if the tomato is moving up
+			if(platforms[0].platY+50 < tomatoHeight-23){	//check if the tomato is below a platform
+				if(tomatoHeight-28 <= platforms[0].platY+50){
+					tomatoHeight = platforms[0].platY+78;	
+				}
+				else{
+					tomatoHeight -= 5;
+				}				
+			}
+			else{
+				tomatoHeight -= 5;
+			}
+
+			if(tomatoHeight + 25 <= platforms[0].platY){	//Tomato does not fall through platforms
+				if(tomatoHeight + 25 + gravity >= platforms[0].platY){
+					tomatoHeight = platforms[0].platY-25;	
+				}
+			}
+			else{
+				tomatoHeight +=gravity;
+			}	
+		}
+		else{	//if the tomato is moving down
+			if(tomatoHeight + 25 <= platforms[0].platY){	//Tomato does not fall through platforms
+				if(tomatoHeight + 25+gravity >= platforms[0].platY){
+					tomatoHeight = platforms[0].platY-25;	
+				}
+			}
+			else{
+				tomatoHeight +=gravity;
+			}
+		}
 	}
-	if(tomatoHeight < 0){ //Placeholder for triangle
+	else{	//handle if the tomato is in a gap space
+		if(vol > threshold){
+			tomatoHeight -= 5;
+		}
+
+		tomatoX += tomatoSpeed;		//Tomato speed is added to tomato to move it horizontally
+		tomatoHeight += gravity;	//Tomato height is affected by gravity
+	}
+
+	if(tomatoHeight < 0){ 	//Placeholder for triangle
 		fill(0);
 		triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
-	}
-
-	//Tomato speed is added to tomato to move it horizontally
-	tomatoX += tomatoSpeed;
-	//Tomato height is affected by gravity
-	tomatoHeight += gravity;
-
-	//Tomato does not go below the platform height 
-	//TODO: slightly glitchy? sometimes if tomato is part way through the platform it'll jerk back up I'm too tired to math
-	//outer if is just like if between a platform
-	if(platforms[0] && tomatoX >= platforms[0].platX+30 && platforms[0].platX + 50*platforms[0].platWidth > 0){
-
-		if(platforms[0].platY <= tomatoHeight + 30){	//Tomato does not fall through platforms
-		
-			tomatoHeight = platforms[0].platY-30;
-		}
-		else if (tomatoHeight-30 < platforms[0].platY+50){	//Tomato does not go through platforms
-		
-			//tomatoHeight = platforms[0].platY+30;
-		}
 	}
 
 	//Temporary: Tomato restarts at the left side of canvas
