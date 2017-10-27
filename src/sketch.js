@@ -282,12 +282,15 @@ function game(){
 		}
 		else{	//if the tomato is moving down
 			if(tomatoHeight + 25 <= platforms[0].platY){	//Tomato does not fall through platforms
-				if(tomatoHeight + 25+gravity >= platforms[0].platY){
+				if(tomatoHeight + 25 + gravity >= platforms[0].platY){
 					tomatoHeight = platforms[0].platY-25;	
+				}
+				else{
+					tomatoHeight += gravity;
 				}
 			}
 			else{
-				tomatoHeight +=gravity;
+				tomatoHeight += gravity;
 			}
 		}
 	}
