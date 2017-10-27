@@ -1,6 +1,5 @@
 //Declare and intialize variables 
 var canvas;
-
 var currentFrame;
 
 //tile variable
@@ -9,6 +8,7 @@ var grassM;
 var grassR;
 var platforms = [];
 
+var platID = 0;
 var platX;
 var platY;
 var platWidth;
@@ -63,6 +63,7 @@ function initializeGame(){	//resets game variables
 	platforms = [];
 	succs = [];
 	potatos=[];
+	walkingPotatos=[];
 
 	//set up the initial platforms
 	platforms.push(new platformObj(platX, platY, platWidth, gapWidth));	//add the first platform
@@ -73,7 +74,8 @@ function initializeGame(){	//resets game variables
 		platY = map(noise(platNoise), 0, 1, 200, 450);
 		platWidth = random(2, 6);
 		gapWidth = random(100, 350);
-		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,false));
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,false,platID));
+		platID++;
 		platNoise += 0.05;
 	}
 }
@@ -215,9 +217,9 @@ function game(){
 	for (var i = 0; i < platforms.length; i++){
 		platforms[i].display();
 		platforms[i].platX -= 2;
-		if (platforms[i].enemy != undefined){ //has an enemy
+		// if (platforms[i].enemy != undefined){ //has an enemy
 
-		}
+		// }
 	}
 
 	//add more platforms if there is space on screen for one
@@ -226,13 +228,15 @@ function game(){
 		platY = map(noise(platNoise), 0, 1, 200, 450);
 		platWidth = random(2, 6);
 		gapWidth = random(100, 350);
-		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,true));
+		platforms.push(new platformObj(platX, platY, platWidth, gapWidth,true,platID));
+		platID++;
 		platNoise += 0.5;
 	}
 	// HERE IS THE ONES AFTER THE INITIAL ONES SO HERE IS WHERE WE WANNA START GENERATING ENEMIES
 
 	//platforms should be deleted from the array after they leave the screen
 	if(platforms[0].platX + 50*platforms[0].platWidth + 40 <= 0){
+		console.log("id",platforms[0].id);
 		platforms.splice(0, 1);
 	}
 
@@ -241,8 +245,13 @@ function game(){
 		succs.splice(0,1);
 	}
 
+	//popping off potatos
 	if (potatos[0] && potatos[0].x+65 <=0){
 		potatos.splice(0,1);
+	}
+
+	if (walkingPotatos[0] && walkingPotatos[0].x+65 <=0){
+		walkingPotatos.splice(0,1);
 	}
 
 	//get volume from mic (values b/w 0 and 1);
@@ -298,6 +307,19 @@ function game(){
 	//walkingPotato.display();
 	for (let i = 0; i<walkingPotatos.length; i++){
 		walkingPotatos[i].display();
+		//when display, check platform ID for the left PLAt thing
+		for (let j = 0; j<platforms.length; j++){
+			if (walkingPotatos[i].platformIDAttached ==platforms[j].id){//if the IDs match aka its own platform
+				//its centered but platforms arent
+				if (walkingPotatos[i].x-35 <= platforms[j].platX){ //left side of platform
+					walkingPotatos[i].xSpeed =1;
+				}
+				else if (walkingPotatos[i].x-35 >= platforms[j].platX +platforms[j].platWidth*50 ){ //right side of platform
+					walkingPotatos[i].xSpeed =-1;
+				}
+				break; //done checking platforms, saves liek 1 check per thing so "optimized??"
+			}
+		}
 		walkingPotatos[i].collisionTest();
 	}
 	
@@ -316,36 +338,36 @@ function game(){
 	}
 }
 
-function platformObj(platX, platY, platWidth, gapWidth,ya){
+function platformObj(platX, platY, platWidth, gapWidth,ya,id){
 	this.platX = platX;			//the X position of the upper left corner of platform
 	this.platY = platY;			//the Y position of the upper left corner of platform
 	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
 	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
+	this.id = id;
 	if (ya){
 		this.chanceOfEnemySpawn = random(50);
 	} else{
 		this.chanceOfEnemySpawn = 51;
 	}
-	
-	this.enemy;
+	//define function inside platform obj, just call it in the walkingpotato draw thing
 
 	//generates enemies based on random numbers
-	if(this.chanceOfEnemySpawn<6){ //walking potato?
+	if(this.chanceOfEnemySpawn<15){ //walking potato?
 		//TODO: generate an enemy between given platform's X and X+platWidth*50
 		//imageMode(CORNER);
-		//walkingPotato = new Tater(200,250,walkingPotatoImgs,-70,-105);
+		var walkingPotato = new Tater(this.platX+(this.platWidth*50)- 70,this.platY - 52,walkingPotatoImgs,70,105,this.id);
+		walkingPotatos.push(walkingPotato);
 	}
-	else if(this.chanceOfEnemySpawn<20){ //succ
+	else if(this.chanceOfEnemySpawn<30){ //succ
 		var platSucc;
 		for (let i = 1;i<this.platWidth; i+=2){
-			platSucc = new Spike(platX+(45*i),this.platY-180,succImgs,90,110);
+			platSucc = new Spike(this.platX+(45*i),this.platY-180,succImgs,90,110);
 			succs.push(platSucc);
 		}
 	}
 	else if(this.chanceOfEnemySpawn<45){ //size potato
 		var potato = new Tot(this.platX+(this.platWidth*50) - 50,this.platY - 80,potatoImgs,332,332);
-		potatos.push(potato);
-		
+		potatos.push(potato);	
 	}
 
 	this.display = function(){	//function for showing the platforms; first and last blocks are rounded 
@@ -400,9 +422,10 @@ function Spike(xPos,yPos,obj,xSize,ySize) { //x and y are top left
 	}
 }
 
-function Tater(xPos,yPos,obj,xSize,ySize) { //potato with arms
+function Tater(xPos,yPos,obj,xSize,ySize,id) { //potato with arms
 	this.x = xPos;
 	this.y = yPos;
+	this.platformIDAttached = id; 
 	this.xSpeed = -1;
 	this.ySpeed = 0;
 	this.xSize = xSize;
@@ -411,9 +434,13 @@ function Tater(xPos,yPos,obj,xSize,ySize) { //potato with arms
 	//update in display
 	this.display = function(){
 		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
+		this.x += (-2 + this.xSpeed );
 	}
-	this.collision = function (){
-
+	this.collisionTest = function (){
+		if ((tomatoHeight-23)<=(this.y+(this.ySize /2)) && (tomatoX+28)>=(this.x-(this.xSize/2)) && (tomatoX-28)<=(this.x+(this.xSize/2)) && (tomatoHeight+23)>this.y-(this.ySize/2)){
+			this.collide = true;
+			gameMode = 2;
+		}
 	}
 
 }
