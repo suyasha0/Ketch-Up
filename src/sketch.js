@@ -8,6 +8,7 @@ var grassM;
 var grassR;
 var platforms = [];
 
+//platform variables
 var platID = 0;
 var platX;
 var platY;
@@ -37,31 +38,29 @@ var walkingPotatoRImgs = [];
 var walkingPotato;
 var walkingPotatos = [];
 
+//game state variables
 var startscreen, endscreen, pausescreen;
 var cursorImg;
-
-//game mode
 var gameMode = 0;
 var paused = false;
 
 //Mic variable
 var micInput;
 var gravity = 1;
-//var jump = false;
+var counter = 0;
 
 function initializeGame(){	//resets game variables
 	paused = false;
-
-	currentFrame = 0;
-
-	tomatoHeight = 270;
+	currentFrame = 0;	//reset frame
+	tomatoHeight = 270;	//reset back to initial position
 	tomatoX = 50;
+	counter = 0;
 
 	platX = -50;	//first platform is off the screen because the first one shouldn't be rounded
 	platY = 300;
 	platWidth = 8;
 	gapWidth = 150;
-	platforms = [];
+	platforms = [];	//intialize arrays
 	succs = [];
 	potatos=[];
 	walkingPotatos=[];
@@ -161,36 +160,36 @@ function setup(){
 }
 
 function draw(){
-	background(250);
-	currentFrame += 1;
+	background(250);	//set background color to light gray
+	currentFrame += 1;	//increase the current frame by 1
 	
 	if(paused){					//pause screen
-		pauseScreen();
+		pauseScreen();			//call pause screen function
 	}
 	else{
 		if (gameMode === 0){	//represents title screen
-			startScreen();
+			startScreen();		//call start screen function
 		}
 		if (gameMode === 1){	//represents game screen
-			game();
+			game();				//call game function
 		}
 		if (gameMode === 2){	//represents game over screen
-			gameOver();
+			gameOver();			//call game over function
 		}
 	}
 
 	//show cursor at every screen except game screen
 	if(paused || gameMode===0 || gameMode===2){
-		image(cursorImg, mouseX, mouseY);
+		image(cursorImg, mouseX, mouseY);	//set the cursor to an image 
 	}
 }
 
 function startScreen(){
-	imageMode(CORNER);
-	image(startscreen, 0, 0);
+	imageMode(CORNER);	//left hand corner the image 
+	image(startscreen, 0, 0);	//show the start screen as an image 
 
 	//draw tomato running to the right
-	imageMode(CENTER);
+	imageMode(CENTER);	//center the image
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
 
 	//draw succulent
@@ -250,56 +249,75 @@ function game(){
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	var threshold = 0.1;	//temporary threshold (easier to test at 0.1)
+	var threshold = 0.2;	//threshold for the volume(easier to test at 0.1)
+	var mapVolume = map(vol, 0, 1, 5, 15);
+	var mapGravity = map(vol, 0, 1, 2.5, 7.5);
 	if(platforms[0] && tomatoX+30 >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth > 0){
-		if(vol > threshold){	//if the tomato is moving up
+		if(vol > threshold && counter < 300){	//if the tomato is moving up
 			if(platforms[0].platY+50 < tomatoHeight-23){	//check if the tomato is below a platform
 				if(tomatoHeight-28 <= platforms[0].platY+50){
-					tomatoHeight = platforms[0].platY+78;	
+					tomatoHeight = platforms[0].platY+78;	//keep tomato under platform 
 				}
 				else{
-					tomatoHeight -= 5;
+					if(counter < 300){
+						console.log("First case");
+						tomatoHeight -= mapVolume;
+					}
 				}				
-			}
+			} 	//if not below platform 
 			else{
-				tomatoHeight -= 5;
+				if(counter < 300){
+						console.log("Second case");
+						tomatoHeight -= mapVolume;
+				}
 			}
 
 			if(tomatoHeight + 25 <= platforms[0].platY){	//Tomato does not fall through platforms
 				if(tomatoHeight + 25 + gravity >= platforms[0].platY){
-					tomatoHeight = platforms[0].platY-25;	
+					tomatoHeight = platforms[0].platY-25;	//keep tomato on top of platform 
 				}
 			}
 			else{
-				tomatoHeight +=gravity;
+				tomatoHeight += mapGravity;
 			}	
 		}
 		else{	//if the tomato is moving down
 			if(tomatoHeight + 25 <= platforms[0].platY){	//Tomato does not fall through platforms
-				if(tomatoHeight + 25 + gravity >= platforms[0].platY){
+				if(tomatoHeight + 25 + mapGravity >= platforms[0].platY){
 					tomatoHeight = platforms[0].platY-25;	
 				}
 				else{
-					tomatoHeight += gravity;
+					tomatoHeight += mapGravity;
 				}
 			}
 			else{
-				tomatoHeight += gravity;
+				tomatoHeight += mapGravity;
 			}
 		}
 	}
 	else{	//handle if the tomato is in a gap space
 		if(vol > threshold){
-			tomatoHeight -= 5;
+			if(counter < 300){
+				console.log("Third case");
+				tomatoHeight -= mapVolume;
+			}
 		}
 
 		tomatoX += tomatoSpeed;		//Tomato speed is added to tomato to move it horizontally
-		tomatoHeight += gravity;	//Tomato height is affected by gravity
+		tomatoHeight += mapGravity;	//Tomato height is affected by gravity
 	}
 
-	if(tomatoHeight < 0){ 	//Placeholder for triangle
+	if(tomatoHeight - 25 < 0){ 	//Placeholder for triangle
 		fill(0);
 		triangle(tomatoX-10, 10, tomatoX, 0, tomatoX + 10, 10);
+		text(Math.abs(Math.floor(tomatoHeight)), tomatoX-10, 20);
+		if(counter < 300){
+			counter++;
+		}
+		text(Math.ceil((300-counter)/60), width - 30, 10);
+	}
+	if(tomatoHeight > height/2){
+		counter = 0;
 	}
 
 	//Temporary: Tomato restarts at the left side of canvas
