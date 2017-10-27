@@ -345,11 +345,10 @@ function game(){
 	for (let i =0; i<potatos.length; i++){
 		potatos[i].display();
 		potatos[i].collisionTest();
-	
 	}
 
 	imageMode(CORNER);
-//succulents
+	//succulents
 	for (let i =0; i <succs.length; i++){
 		succs[i].display();
 		succs[i].collisionTest();
