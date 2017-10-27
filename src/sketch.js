@@ -33,6 +33,7 @@ var succs = [];
 
 //Walking potato (walkingPotato) variables
 var walkingPotatoImgs = [];
+var walkingPotatoRImgs = [];
 var walkingPotato;
 var walkingPotatos = [];
 
@@ -105,6 +106,14 @@ function preload() {
 		}
 	}
 
+	//load walking potato Right
+	for (var i = 1; i < 42; i++){
+		for (var j = 0; j < 2; j++){
+			var fileName = "images/enemies/potato_walk/potato_walkR"+i+".png";
+			walkingPotatoRImgs.push(loadImage(fileName));
+		}
+	}
+
 	//load succ
 	for (var i = 1; i < 11; i++){
 		for (var j = 0; j < 8; j++){
@@ -134,24 +143,9 @@ function setup(){
 	var x = (windowWidth - width) / 2;
 	var y = (windowHeight - height) / 2;
 	canvas.position(x, y);
-
-
-	// var potatoPositioningX =630;
-	// var potatoPositioningY =250;
-	// for (let i =0; i <4; i++){
-	// 	potato = new Tot(potatoPositioningX,potatoPositioningY,potatoImgs,332,332);
-	// 	potatoPositioningX +=200;
-	// 	potatos.push(potato);
-	// }
 	
 	//original is 332 x 332 -> 300
 	//actual size is 61 x 81 *300/332
-	// var succPositioning =0;
-	// for (let i =0; i <4; i++){
-	// 	succ = new Spike(succPositioning,0,succImgs,90,110);
-	// 	succPositioning += 90;
-	// 	succs.push(succ);
-	// }
 	walkingPotato = new Tater(200,250,walkingPotatoImgs,-70,-105);
 	//original is 280 x 420
 
@@ -313,9 +307,11 @@ function game(){
 				//its centered but platforms arent
 				if (walkingPotatos[i].x-35 <= platforms[j].platX){ //left side of platform
 					walkingPotatos[i].xSpeed =1;
+					walkingPotatos[i].obj = walkingPotatoRImgs;
 				}
 				else if (walkingPotatos[i].x-35 >= platforms[j].platX +platforms[j].platWidth*50 ){ //right side of platform
 					walkingPotatos[i].xSpeed =-1;
+					walkingPotatos[i].obj = walkingPotatoImgs;
 				}
 				break; //done checking platforms, saves liek 1 check per thing so "optimized??"
 			}
@@ -327,7 +323,6 @@ function game(){
 	for (let i =0; i<potatos.length; i++){
 		potatos[i].display();
 		potatos[i].collisionTest();
-	
 	}
 
 	imageMode(CORNER);
@@ -431,9 +426,10 @@ function Tater(xPos,yPos,obj,xSize,ySize,id) { //potato with arms
 	this.xSize = xSize;
 	this.ySize = ySize;
 	this.collide = false;
+	this.obj = obj;
 	//update in display
 	this.display = function(){
-		image(obj[currentFrame%obj.length], this.x, this.y, this.xSize, this.ySize);
+		image(this.obj[currentFrame%this.obj.length], this.x, this.y, this.xSize, this.ySize);
 		this.x += (-2 + this.xSpeed );
 	}
 	this.collisionTest = function (){
