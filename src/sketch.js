@@ -215,8 +215,6 @@ function game(){
 	for (var i = 0; i < platforms.length; i++){ //each platform in array
 		platforms[i].display();	//display each platform 
 		platforms[i].platX -= 2;	
-		// if (platforms[i].enemy != undefined){ //has an enemy
-		// }
 	}
 
 	//add more platforms if there is space on screen for one
