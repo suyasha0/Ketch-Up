@@ -257,7 +257,7 @@ function game(){
 	var mapVolume = map(vol, 0, 1, 5, 15);	//map volume to how high tomato jumps
 	var mapGravity = map(vol, 0, 1, 2.5, 7.5);	//map gravity to how fast tomato should fall
 	//check if there are platforms 
-	if(platforms[0] && tomatoX+30 >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth > 0){
+	if(platforms[0] && tomatoX+30 >= platforms[0].platX && platforms[0].platX + 50*platforms[0].platWidth >= tomatoX-30){
 		if(vol > threshold && counter < maxScream){	//if scream is heard and tomato is on the canvas 
 			if(platforms[0].platY+50 < tomatoHeight-23){	//check if the tomato passed platform 
 				if(tomatoHeight-28 <= platforms[0].platY+50){ //check if tomato is below platform 
@@ -529,8 +529,9 @@ function Tot(xPos,yPos,obj,xSize,ySize){ //no limbed potato
 function gameOver(){
 	image(endscreen, 0, 0); //show endscreen image
 	fill(255);	//set color to white
-	textSize(25);	//set text size to 25
-	text(score, width/2 - 25, height/2 + 25);	//show the final score 
+	textSize(50);	//set text size to 25
+	words = ""+score;
+	text(words, (width-textWidth(words))/2-10, height/2 + 48);	//show the final score 
 	
 	//highlight buttons if mouseover
 	if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
