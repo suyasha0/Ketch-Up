@@ -204,11 +204,6 @@ function startScreen(){
 	imageMode(CORNER);	//left hand corner the image 
 	image(startscreen, 0, 0);	//show the start screen as an image 
 
-	//music
-	if(!music.isPlaying()){
-		music.play();
-	}
-
 	//draw tomato running to the right
 	imageMode(CENTER);	//center the image
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
@@ -237,10 +232,10 @@ function startScreen(){
 	image(walkingPotatoImgs[12], 900, 320, -70, -105);
 
 	//highlight start button if mouseover
-	if(mouseX>=425 && mouseX<=583.5 && mouseY>=370 && mouseY<=443){
+	if(mouseX>=432 && mouseX<=587 && mouseY>=370 && mouseY<=443){
 		noStroke();		//no stroke
 		fill(255, 80);	//set to white with opacity of 80
-		rect(417, 310, 160, 68, 20);	//draw a rect 
+		rect(417, 310, 180, 73, 20);	//draw a rect 
 	}
 }
 
@@ -572,6 +567,8 @@ function gameOver(){
 	if(!music.isPlaying()){
 		music.play();
 	}
+
+	image(potatoImgs[currentFrame%potatoImgs.length], 650, 100);
 	
 	//highlight buttons if mouseover
 	if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
@@ -611,6 +608,8 @@ function windowResized(){	//ensures the canvas remains centered
 
 //Function mouseClicked() - check if mouse has been clicked once 
 function mouseClicked(){
+
+	console.log(mouseX);
 	if(paused){	//if game is paused 
 		//if click resume, resume game
 		if(mouseX>=416 && mouseX<=536 && mouseY>=258 && mouseY<=285){
@@ -627,7 +626,7 @@ function mouseClicked(){
 
 	//if click start button, start game
 	else if(gameMode===0){
-		if(mouseX>=425 && mouseX<=583.5 && mouseY>=370 && mouseY<=443){
+		if(mouseX>=432 && mouseX<=587 && mouseY>=370 && mouseY<=443){
 			initializeGame();	//call initializeGame which resets all variables
 			gameMode = 1;	//set gameMode to 1
 		}
@@ -641,7 +640,7 @@ function mouseClicked(){
 		}
 
 		//if click home button, go to start screen
-		else if(mouseX>=538.4 && mouseX<=590.5 && mouseY>=391 && mouseY<=408){
+		else if(mouseX>=533.4 && mouseX<=585.5 && mouseY>=391 && mouseY<=408){
 			initializeGame();	//call initializeGame which resets all variables
 			gameMode = 0;		//set gameMode to 0
 		}
