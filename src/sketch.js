@@ -213,11 +213,29 @@ function startScreen(){
 	imageMode(CENTER);	//center the image
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
 
+	//get volume from mic (values b/w 0 and 1);
+	var vol = micInput.getLevel();
+	var threshold = 0.2;	//threshold for the volume(easier to test at 0.1)
+	var mapVolume = map(vol, 0, 1, 5, 15);	//map volume to how high tomato jumps
+	var mapGravity = map(vol, 0, 1, 2.5, 7.5);	//map gravity to how fast tomato should fall
+
+	if(vol > threshold && tomatoHeight > 50){
+		if(tomatoHeight <= 250){
+			tomatoHeight -= 10;
+		}
+		tomatoHeight -= mapVolume;
+	}
+	if(tomatoHeight<=250){
+		tomatoHeight += gravity;
+	}
+
 	//draw succulent
 	image(succImgs[currentFrame%succImgs.length], 820, 50);
 
-	//draw enemy
+	//draw enemies
 	image(potatoImgs[0], 820, 320);
+	image(walkingPotatoImgs[12], 900, 320, -70, -105);
+
 	//highlight start button if mouseover
 	if(mouseX>=425 && mouseX<=583.5 && mouseY>=370 && mouseY<=443){
 		noStroke();		//no stroke
