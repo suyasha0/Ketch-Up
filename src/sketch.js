@@ -2,10 +2,13 @@
 var canvas;
 var currentFrame;
 
+//music variables
+var music;
+
+var font;
+
 //tile variable
-var grassL;
-var grassM;
-var grassR;
+var grassL, grassM, grassR;
 var platforms = [];
 
 //platform variables
@@ -68,6 +71,8 @@ function initializeGame(){	//resets game variables
 	potatos=[];
 	walkingPotatos=[];
 
+	textFont(font);
+
 	//set up the initial platforms
 	platforms.push(new PlatformObj(platX, platY, platWidth, gapWidth));	//add the first platform
 
@@ -129,8 +134,13 @@ function preload() {
 	endscreen = loadImage("images/gameoverscreen.png");
 	pausescreen = loadImage("images/pausescreen.png");
 
+	//load music
+	music = loadSound("sounds/jangle.mp3");
+
 	//load cursor graphic
 	cursorImg = loadImage("images/fry.png");
+
+	font = loadFont('images/jazztext.ttf');
 
 	//load tile images
 	grassL = loadImage("images/tiles/grassLeft.png");
@@ -157,6 +167,8 @@ function setup(){
 
 	//no cursor
 	noCursor();
+
+	music.setVolume(.5);
 
 	//set up initial game variables
 	initializeGame();
@@ -192,6 +204,11 @@ function startScreen(){
 	imageMode(CORNER);	//left hand corner the image 
 	image(startscreen, 0, 0);	//show the start screen as an image 
 
+	//music
+	if(!music.isPlaying()){
+		music.play();
+	}
+
 	//draw tomato running to the right
 	imageMode(CENTER);	//center the image
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
@@ -211,6 +228,9 @@ function startScreen(){
 
 //Function game() - the game phase 
 function game(){
+
+	music.stop();
+
 	//draw all platforms, they are constantly moving from the right to left at a rate of 2
 	for (var i = 0; i < platforms.length; i++){ //each platform in array
 		platforms[i].display();	//display each platform 
@@ -527,9 +547,13 @@ function Tot(xPos,yPos,obj,xSize,ySize){ //no limbed potato
 function gameOver(){
 	image(endscreen, 0, 0); //show endscreen image
 	fill(255);	//set color to white
-	textSize(50);	//set text size to 25
+	textSize(70);	//set text size to 70
 	words = ""+score;
-	text(words, (width-textWidth(words))/2-10, height/2 + 48);	//show the final score 
+	text(words, (width-textWidth(words))/2-10, height/2 + 58);	//show the final score 
+
+	if(!music.isPlaying()){
+		music.play();
+	}
 	
 	//highlight buttons if mouseover
 	if(mouseX>=360.5 && mouseX<=483.5 && mouseY>=391 && mouseY<=408){
