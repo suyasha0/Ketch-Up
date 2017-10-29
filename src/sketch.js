@@ -168,7 +168,7 @@ function setup(){
 	//no cursor
 	noCursor();
 
-	music.setVolume(.5);
+	music.setVolume(.2);
 
 	//set up initial game variables
 	initializeGame();
@@ -208,20 +208,21 @@ function startScreen(){
 	imageMode(CENTER);	//center the image
 	image(tomatoRunning[currentFrame%tomatoRunning.length], 175, tomatoHeight+20, 160, 120);
 
+	if(!music.isPlaying()){
+		music.play();
+	}
+
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	var threshold = 0.2;	//threshold for the volume(easier to test at 0.1)
+	var threshold = 0.15;	//threshold for the volume(easier to test at 0.1)
 	var mapVolume = map(vol, 0, 1, 5, 15);	//map volume to how high tomato jumps
 	var mapGravity = map(vol, 0, 1, 2.5, 7.5);	//map gravity to how fast tomato should fall
 
 	if(vol > threshold && tomatoHeight > 50){
-		if(tomatoHeight <= 250){
-			tomatoHeight -= 10;
-		}
 		tomatoHeight -= mapVolume;
 	}
 	if(tomatoHeight<=250){
-		tomatoHeight += gravity;
+		tomatoHeight += mapGravity;
 	}
 
 	//draw succulent
@@ -242,7 +243,9 @@ function startScreen(){
 //Function game() - the game phase 
 function game(){
 
-	music.stop();
+	if(!music.isPlaying()){
+		music.play();
+	}
 
 	//draw all platforms, they are constantly moving from the right to left at a rate of 2
 	for (var i = 0; i < platforms.length; i++){ //each platform in array
@@ -284,7 +287,7 @@ function game(){
 
 	//get volume from mic (values b/w 0 and 1);
 	var vol = micInput.getLevel();
-	var threshold = 0.2;	//threshold for the volume(easier to test at 0.1)
+	var threshold = 0.15;	//threshold for the volume(easier to test at 0.1)
 	var mapVolume = map(vol, 0, 1, 5, 15);	//map volume to how high tomato jumps
 	var mapGravity = map(vol, 0, 1, 2.5, 7.5);	//map gravity to how fast tomato should fall
 	//check if there are platforms 
@@ -586,6 +589,8 @@ function gameOver(){
 function pauseScreen(){
 	imageMode(CORNER);			//image mode is from top left
 	image(pausescreen, 0, 0);	//show pause screen image
+
+	music.stop();
 
 	//highlight buttons if mouseover
 	if(mouseX>=416 && mouseX<=536 && mouseY>=258 && mouseY<=285){
