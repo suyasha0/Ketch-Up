@@ -68,8 +68,8 @@ function initializeGame(){	//resets game variables
 	gapWidth = 150;
 	platforms = [];	//intialize arrays
 	succs = [];
-	potatos=[];
-	walkingPotatos=[];
+	potatos = [];
+	walkingPotatos = [];
 
 	textFont(font);
 
@@ -194,7 +194,7 @@ function draw(){
 	}
 
 	//show cursor at every screen except game screen
-	if(paused || gameMode===0 || gameMode===2){
+	if(paused || gameMode === 0 || gameMode === 2){
 		image(cursorImg, mouseX, mouseY);	//set the cursor to an image 
 	}
 }
@@ -233,7 +233,7 @@ function startScreen(){
 	image(walkingPotatoImgs[12], 900, 320, -70, -105);
 
 	//highlight start button if mouseover
-	if(mouseX>=432 && mouseX<=587 && mouseY>=370 && mouseY<=443){
+	if(mouseX >= 432 && mouseX <= 587 && mouseY >=370 && mouseY <= 443){
 		noStroke();		//no stroke
 		fill(255, 80);	//set to white with opacity of 80
 		rect(417, 310, 180, 73, 20);	//draw a rect 
@@ -271,17 +271,17 @@ function game(){
 	}
 
 	//popping off succs
-	if (succs[0] && succs[0].x+90 <=0){
+	if (succs[0] && succs[0].x+90 <= 0){
 		succs.splice(0,1);
 	}
 
 	//popping off potato
-	if (potatos[0] && potatos[0].x+65 <=0){
+	if (potatos[0] && potatos[0].x+65 <= 0){
 		potatos.splice(0,1);
 	}
 
 	//popping off walking potato
-	if (walkingPotatos[0] && walkingPotatos[0].x+65 <=0){
+	if (walkingPotatos[0] && walkingPotatos[0].x+65 <= 0){
 		walkingPotatos.splice(0,1);
 	}
 
@@ -380,15 +380,15 @@ function game(){
 	for (let i = 0; i<walkingPotatos.length; i++){	//loop through walkingPotatoes array
 		walkingPotatos[i].display();	//call the display function for each walkingPotato
 		//when display, check platform ID for the left Plat thing
-		for (let j = 0; j<platforms.length; j++){
-			if (walkingPotatos[i].platformIDAttached ==platforms[j].id){//if the IDs match aka its own platform
+		for (let j = 0; j < platforms.length; j++){
+			if (walkingPotatos[i].platformIDAttached == platforms[j].id){//if the IDs match aka its own platform
 				//its centered but platforms arent
 				if (walkingPotatos[i].x-35 <= platforms[j].platX){ //if potato hits left side of platform
 					walkingPotatos[i].xSpeed =1;	//set xSpeed to 1
 					walkingPotatos[i].obj = walkingPotatoRImgs;	//switch the image to a potato walking to the right
 				}
 				else if (walkingPotatos[i].x-35 >= platforms[j].platX +platforms[j].platWidth*50 ){ //if potato hits right side of platform
-					walkingPotatos[i].xSpeed =-1;	//set xSpeed to -1
+					walkingPotatos[i].xSpeed =- 1;	//set xSpeed to -1
 					walkingPotatos[i].obj = walkingPotatoImgs;	//switch image to potota walking to the left 
 				}
 				break; //done checking platforms
@@ -405,7 +405,7 @@ function game(){
 
 	imageMode(CORNER);	//set image to left top corner 
 	//succulents
-	for (let i =0; i <succs.length; i++){	//for each succulent in array
+	for (let i = 0; i <succs.length; i++){	//for each succulent in array
 		succs[i].display();	//display each succ
 		succs[i].collisionTest();	//check for collision
 	}
@@ -419,26 +419,27 @@ function PlatformObj(platX, platY, platWidth, gapWidth,ya,id){
 	this.platWidth = platWidth;	//the width of the platform in blocks; each block is 50px
 	this.gapWidth = gapWidth;	//the width of the empty space after the current platform
 	this.id = id;				//the id of the platform 
-	if (ya){	//if true 
+	if(ya){	//if true 
 		this.chanceOfEnemySpawn = random(50);	//chance of enemy spawning is 0 and up to 50
-	} else{
+	} 
+	else{
 		this.chanceOfEnemySpawn = 51;	//else, chance of enemy spawning is 51
 	}
 
 	//generates enemies based on random numbers
-	if(this.chanceOfEnemySpawn<15){ //walking potato spawns if chance is less than 15
+	if(this.chanceOfEnemySpawn < 15){ //walking potato spawns if chance is less than 15
 		//Create a new Tater object (walking potato)
 		var walkingPotato = new Tater(this.platX+(this.platWidth*50)- 70,this.platY - 52,walkingPotatoImgs,70,105,this.id);
 		walkingPotatos.push(walkingPotato); //add walkingPotato object to walkingPotatos array
 	}
-	else if(this.chanceOfEnemySpawn<30){ //succ spawns if chance is less than 30
+	else if(this.chanceOfEnemySpawn < 30){ //succ spawns if chance is less than 30
 		var platSucc;
-		for (let i = 1;i<this.platWidth; i+=2){
+		for (let i = 1; i < this.platWidth; i += 2){
 			platSucc = new Spike(this.platX+(45*i),this.platY-180,succImgs,90,110); //create a new Spike object (succulent)
 			succs.push(platSucc);	//add platSucc object to succs array
 		}
 	}
-	else if(this.chanceOfEnemySpawn<45){ //size potato spawns if chance is less than 45
+	else if(this.chanceOfEnemySpawn < 45){ //size potato spawns if chance is less than 45
 		//create a new Tot object (size potato)
 		var potato = new Tot(this.platX+(this.platWidth*50) - 50,this.platY - 80,potatoImgs,332,332); 
 		potatos.push(potato);	//add potato to potatos array
@@ -567,9 +568,7 @@ function gameOver(){
 	words = ""+score;
 	text(words, (width-textWidth(words))/2-10, height/2 + 58);	//show the final score 
 
-	if(!music.isPlaying()){
-		music.play();
-	}
+	music.stop();
 
 	image(potatoImgs[currentFrame%potatoImgs.length], 650, 100);
 	
